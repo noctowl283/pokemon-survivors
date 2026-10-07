@@ -58,6 +58,7 @@ const btnCreditos = document.getElementById("btn-creditos");
 const btnVoltarComoJogar = document.getElementById("btn-voltar-como-jogar");
 const btnVoltarCreditos = document.getElementById("btn-voltar-creditos");
 const btnContinuarEvolucao = document.getElementById("btn-continuar-evolucao");
+const jogadorSprite = document.querySelector(".charmander-jogo");
 
 
 // ========================================
@@ -180,10 +181,19 @@ function fecharQuiz() {
 // EVOLUÇÃO
 // ========================================
 
+function aplicarEvolucao() {
+    if (!jogadorSprite) return;
+
+    jogadorSprite.classList.remove("charmander-jogo");
+    jogadorSprite.classList.add("charmeleon-jogo");
+}
+
 function abrirEvolucao() {
     quiz.style.display = "none";
     jogo.style.display = "none";
     evolucao.style.display = "flex";
+
+    aplicarEvolucao();
 
     if (nivel) {
         nivel.textContent = "2";
