@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pokémon Survivors</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ==============================
+         MENU PRINCIPAL
+    =============================== -->
+
+    <main id="menu" class="tela menu">
+
+        <div class="titulo">
+            <h1>POKÉMON</h1>
+            <h2>SURVIVORS</h2>
+        </div>
+
+        <div class="pokemon-menu">
+            <div class="charmander"></div>
+        </div>
+
+        <div class="botoes-menu">
+
+            <button id="btn-jogar" class="botao">
+                JOGAR
+            </button>
+
+            <button id="btn-como-jogar" class="botao">
+                COMO JOGAR
+            </button>
+
+            <button id="btn-creditos" class="botao">
+                CRÉDITOS
+            </button>
+
+        </div>
+
+        <p class="versao">
+            Versão 1.0
+        </p>
+
+    </main>
+
+
+    <!-- ==============================
+         COMO JOGAR
+    =============================== -->
+
+    <main id="como-jogar" class="tela tela-secundaria">
+
+        <h1>COMO JOGAR</h1>
+
+        <div class="caixa-informacao">
+
+            <h2>🎮 CONTROLES</h2>
+
+            <p>
+                Use as teclas <strong>W A S D</strong>
+                para movimentar o Charmander.
+            </p>
+
+            <br>
+
+            <h2>🔥 OBJETIVO</h2>
+
+            <p>
+                Derrote os Pokémon inimigos e sobreviva
+                o máximo de tempo possível.
+            </p>
+
+            <br>
+
+            <h2>⭐ EVOLUÇÃO</h2>
+
+            <p>
+                Ao subir de nível, você deverá responder
+                perguntas sobre Pokémon.
+            </p>
+
+            <p>
+                Se acertar, seu Pokémon evolui!
+            </p>
+
+            <br>
+
+            <h2>🧠 QUIZ</h2>
+
+            <p>
+                A cada evolução aparecerão 4 perguntas.
+            </p>
+
+            <p>
+                Escolha a resposta correta para continuar
+                sua evolução.
+            </p>
+
+        </div>
+
+        <button id="btn-voltar-como-jogar" class="botao">
+            VOLTAR
+        </button>
+
+    </main>
+
+
+    <!-- ==============================
+         CRÉDITOS
+    =============================== -->
+
+    <main id="creditos" class="tela tela-secundaria">
+
+        <h1>CRÉDITOS</h1>
+
+        <div class="caixa-informacao">
+
+            <h2>POKÉMON SURVIVORS</h2>
+
+            <p>
+                2°DS A - Etec Philadelpho Gouvea Netto
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Desenvolvedores</strong>
+            </p>
+
+            <p>
+                Renan R. I. de Melo
+            </p>
+
+            <p>
+                Murilo Ramos Lamana Figueiredo
+            </p>
+
+            <br>
+
+            <p>
+                Projeto desenvolvido utilizando:
+            </p>
+
+            <p>
+                HTML • CSS • JavaScript
+            </p>
+
+        </div>
+
+        <button id="btn-voltar-creditos" class="botao">
+            VOLTAR
+        </button>
+
+    </main>
+    <!-- ==============================
+     TELA DO JOGO
+================================ -->
+
+<main id="jogo" class="tela-jogo">
+
+    <!-- HUD -->
+    <div class="hud">
+
+        <div class="hud-item">
+            ❤️ HP:
+            <span id="hp">100</span>/100
+        </div>
+
+        <div class="hud-item">
+            ⭐ NÍVEL:
+            <span id="nivel">1</span>
+        </div>
+
+        <div class="hud-item">
+            ⏱ <span id="tempo">00:00</span>
+        </div>
+
+    </div>
+
+
+    <!-- ÁREA DO JOGO -->
+    <div class="arena">
+
+        <!-- CHARMANDER -->
+        <div class="jogador">
+            <div class="charmander-jogo"></div>
+        </div>
+
+
+        <!-- INIMIGOS TEMPORÁRIOS -->
+        <div class="inimigo inimigo-1">👾</div>
+
+        <div class="inimigo inimigo-2">👾</div>
+
+        <div class="inimigo inimigo-3">👾</div>
+
+    </div>
+
+</main>
+<!-- TELA DO QUIZ -->
+<main id="quiz" class="tela-quiz">
+
+    <div class="quiz-caixa">
+
+        <h1>⭐ HORA DO QUIZ!</h1>
+
+        <h2 id="quiz-nivel">NÍVEL 2</h2>
+
+        <p id="quiz-pergunta">
+            Qual é o tipo do Charmander?
+        </p>
+
+        <div class="quiz-opcoes">
+
+            <button class="opcao" data-resposta="A">
+                A) Água
+            </button>
+
+            <button class="opcao" data-resposta="B">
+                B) Fogo
+            </button>
+
+            <button class="opcao" data-resposta="C">
+                C) Planta
+            </button>
+
+            <button class="opcao" data-resposta="D">
+                D) Elétrico
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- TELA DE EVOLUÇÃO -->
+<main id="evolucao" class="tela-evolucao">
+
+    <div class="evolucao-caixa">
+
+        <h1>⭐ PARABÉNS! ⭐</h1>
+
+        <p class="texto-evolucao">
+            Seu Pokémon evoluiu!
+        </p>
+
+        <div class="pokemon-evolucao">
+
+            <div class="pokemon-antigo">
+                <div class="sprite-evolucao charmander-evolucao"></div>
+                <p>CHARMANDER</p>
+            </div>
+
+            <div class="seta-evolucao">
+                →
+            </div>
+
+            <div class="pokemon-novo">
+                <div class="sprite-evolucao charmeleon-evolucao"></div>
+                <p>CHARMELEON</p>
+            </div>
+
+        </div>
+
+        <button id="btn-continuar-evolucao" class="botao">
+            CONTINUAR
+        </button>
+
+    </div>
+
+</main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
