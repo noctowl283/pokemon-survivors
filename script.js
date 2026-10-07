@@ -359,4 +359,112 @@ btnContinuarEvolucao.addEventListener("click", function() {
     evolucao.style.display = "none";
     jogo.style.display = "block";
 
-});
+});// ========================================
+// QUIZ — UMA PERGUNTA POR EVOLUÇÃO
+// ========================================
+
+const perguntasQuiz = [
+    {
+        pergunta: "Qual é o tipo do Charmander?",
+        opcoes: ["A) Água", "B) Fogo", "C) Planta", "D) Elétrico"],
+        correta: "B"
+    }
+];
+
+let perguntaAtual = 0;
+let respondendoQuiz = false;
+
+const quizNivel = document.getElementById("quiz-nivel");
+const quizPergunta = document.getElementById("quiz-pergunta");
+const quizOpcoes = document.querySelector(".quiz-opcoes");
+const evolucao = document.getElementById("evolucao");
+const nivel = document.getElementById("nivel");
+
+function mostrarPergunta() {
+    const pergunta = perguntasQuiz[perguntaAtual];
+
+    quizNivel.textContent = "PERGUNTA 1 DE 1";
+    quizPergunta.textContent = pergunta.pergunta;
+    quizOpcoes.innerHTML = "";
+
+    pergunta.opcoes.forEach(function(textoOpcao, indice) {
+        const letra = String.fromCharCode(65 + indice);
+        const botao = document.createElement("button");
+
+        botao.className = "opcao";
+        botao.dataset.resposta = letra;
+        botao.textContent = textoOpcao;
+        botao.addEventListener("click", responderQuiz);
+
+        quizOpcoes.appendChild(botao);
+    });
+
+    respondendoQuiz = true;
+}
+
+function responderQuiz(event) {
+    if (!respondendoQuiz) return;
+
+    respondendoQuiz = false;
+
+    const botaoEscolhido = event.currentTarget;
+    const resposta = botaoEscolhido.dataset.resposta;
+    const pergunta = perguntasQuiz[perguntaAtual];
+
+    const botoes = quizOpcoes.querySelectorAll(".opcao");
+    botoes.forEach(function(botao) {
+        botao.disabled = true;
+    });
+
+    if (resposta === pergunta.correta) {
+        botaoEscolhido.classList.add("resposta-certa");
+        botaoEscolhido.textContent += " ✓";
+
+        // Acertou: fecha o quiz e mostra a evolução imediatamente.
+        setTimeout(function() {
+            abrirEvolucao();
+        }, 500);
+
+    } else {
+        botaoEscolhido.classList.add("resposta-errada");
+        botaoEscolhido.textContent += " ✗";
+
+        // Errou: cancela a evolução e volta para o jogo.
+        setTimeout(function() {
+            quiz.style.display = "none";
+            jogo.style.display = "block";
+            alert("Resposta errada! A evolução foi cancelada.");
+        }, 500);
+    }
+}
+
+function abrirQuiz() {
+    jogo.style.display = "none";
+    evolucao.style.display = "none";
+    quiz.style.display = "flex";
+    mostrarPergunta();
+}
+
+function fecharQuiz() {
+    quiz.style.display = "none";
+    jogo.style.display = "block";
+}
+
+function abrirEvolucao() {
+    quiz.style.display = "none";
+    jogo.style.display = "none";
+    evolucao.style.display = "flex";
+
+    if (nivel) {
+        nivel.textContent = "2";
+    }
+}
+
+const btnContinuarEvolucao = document.getElementById("btn-continuar-evolucao");
+
+if (btnContinuarEvolucao) {
+    btnContinuarEvolucao.addEventListener("click", function() {
+        evolucao.style.display = "none";
+        jogo.style.display = "block";
+    });
+}
