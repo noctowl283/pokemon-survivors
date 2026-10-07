@@ -159,124 +159,113 @@
         </button>
 
     </main>
+
+
     <!-- ==============================
-     TELA DO JOGO
-================================ -->
+         TELA DO JOGO
+    =============================== -->
 
-<main id="jogo" class="tela-jogo">
+    <main id="jogo" class="tela-jogo">
 
-    <!-- HUD -->
-    <div class="hud">
+        <div class="hud">
 
-        <div class="hud-item">
-            ❤️ HP:
-            <span id="hp">100</span>/100
-        </div>
-
-        <div class="hud-item">
-            ⭐ NÍVEL:
-            <span id="nivel">1</span>
-        </div>
-
-        <div class="hud-item">
-            ⏱ <span id="tempo">00:00</span>
-        </div>
-
-    </div>
-
-
-    <!-- ÁREA DO JOGO -->
-    <div class="arena">
-
-        <!-- CHARMANDER -->
-        <div class="jogador">
-            <div class="charmander-jogo"></div>
-        </div>
-
-
-        <!-- INIMIGOS TEMPORÁRIOS -->
-        <div class="inimigo inimigo-1">👾</div>
-
-        <div class="inimigo inimigo-2">👾</div>
-
-        <div class="inimigo inimigo-3">👾</div>
-
-    </div>
-
-</main>
-<!-- TELA DO QUIZ -->
-<main id="quiz" class="tela-quiz">
-
-    <div class="quiz-caixa">
-
-        <h1>⭐ HORA DO QUIZ!</h1>
-
-        <h2 id="quiz-nivel">NÍVEL 2</h2>
-
-        <p id="quiz-pergunta">
-            Qual é o tipo do Charmander?
-        </p>
-
-        <div class="quiz-opcoes">
-
-            <button class="opcao" data-resposta="A">
-                A) Água
-            </button>
-
-            <button class="opcao" data-resposta="B">
-                B) Fogo
-            </button>
-
-            <button class="opcao" data-resposta="C">
-                C) Planta
-            </button>
-
-            <button class="opcao" data-resposta="D">
-                D) Elétrico
-            </button>
-
-        </div>
-
-    </div>
-
-</main>
-
-<!-- TELA DE EVOLUÇÃO -->
-<main id="evolucao" class="tela-evolucao">
-
-    <div class="evolucao-caixa">
-
-        <h1>⭐ PARABÉNS! ⭐</h1>
-
-        <p class="texto-evolucao">
-            Seu Pokémon evoluiu!
-        </p>
-
-        <div class="pokemon-evolucao">
-
-            <div class="pokemon-antigo">
-                <div class="sprite-evolucao charmander-evolucao"></div>
-                <p>CHARMANDER</p>
+            <div class="hud-item">
+                ❤️ HP:
+                <span id="hp">100</span>/100
             </div>
 
-            <div class="seta-evolucao">
-                →
+            <div class="hud-item">
+                ⭐ NÍVEL:
+                <span id="nivel">1</span>
             </div>
 
-            <div class="pokemon-novo">
-                <div class="sprite-evolucao charmeleon-evolucao"></div>
-                <p>CHARMELEON</p>
+            <div class="hud-item">
+                ⏱ <span id="tempo">00:00</span>
             </div>
 
         </div>
 
-        <button id="btn-continuar-evolucao" class="botao">
-            CONTINUAR
-        </button>
 
-    </div>
+        <div class="arena">
 
-</main>
+            <div class="jogador">
+                <div class="charmander-jogo"></div>
+            </div>
+
+            <div class="inimigo inimigo-1">👾</div>
+            <div class="inimigo inimigo-2">👾</div>
+            <div class="inimigo inimigo-3">👾</div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==============================
+         TELA DO QUIZ
+    =============================== -->
+
+    <main id="quiz" class="tela-quiz">
+
+        <div class="quiz-caixa">
+
+            <h1>⭐ HORA DO QUIZ!</h1>
+
+            <h2 id="quiz-nivel">PERGUNTA 1 DE 4</h2>
+
+            <p id="quiz-pergunta">
+                Qual é o tipo do Charmander?
+            </p>
+
+            <div class="quiz-opcoes">
+                <!-- As alternativas são criadas pelo JavaScript -->
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==============================
+         TELA DE EVOLUÇÃO
+    =============================== -->
+
+    <main id="evolucao" class="tela-evolucao">
+
+        <div class="evolucao-caixa">
+
+            <h1>⭐ PARABÉNS! ⭐</h1>
+
+            <p class="texto-evolucao">
+                Seu Pokémon evoluiu!
+            </p>
+
+            <div class="pokemon-evolucao">
+
+                <div class="pokemon-antigo">
+                    <div class="sprite-evolucao charmander-evolucao"></div>
+                    <p>CHARMANDER</p>
+                </div>
+
+                <div class="seta-evolucao">
+                    →
+                </div>
+
+                <div class="pokemon-novo">
+                    <div class="sprite-evolucao charmeleon-evolucao"></div>
+                    <p>CHARMELEON</p>
+                </div>
+
+            </div>
+
+            <button id="btn-continuar-evolucao" class="botao">
+                CONTINUAR
+            </button>
+
+        </div>
+
+    </main>
+
 
     <script src="script.js"></script>
 
