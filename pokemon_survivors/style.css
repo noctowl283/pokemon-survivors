@@ -1,0 +1,754 @@
+/* =================================
+   CONFIGURAÇÕES GERAIS
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    width: 100%;
+    height: 100vh;
+
+    overflow: hidden;
+
+    font-family: Arial, sans-serif;
+
+    background: #151515;
+}
+
+
+/* =================================
+   MENU
+================================= */
+
+.menu {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #3a3a3a 0%,
+            #202020 45%,
+            #101010 100%
+        );
+}
+
+
+/* =================================
+   TÍTULO
+================================= */
+
+.titulo {
+    text-align: center;
+
+    margin-bottom: 5px;
+
+    z-index: 2;
+}
+
+
+.titulo h1 {
+    font-size: 64px;
+
+    font-weight: 900;
+
+    letter-spacing: 4px;
+
+    color: #ffd21c;
+
+    text-shadow:
+        4px 4px 0 #2455a4,
+        -2px -2px 0 #2455a4,
+        2px -2px 0 #2455a4,
+        -2px 2px 0 #2455a4;
+}
+
+
+.titulo h2 {
+    font-size: 38px;
+
+    font-weight: 900;
+
+    letter-spacing: 8px;
+
+    color: white;
+
+    text-shadow:
+        3px 3px 0 #2455a4;
+}
+
+
+/* =================================
+   ÁREA DO POKÉMON
+================================= */
+
+.pokemon-menu {
+    width: 200px;
+    height: 190px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    margin-bottom: 5px;
+}
+
+
+/* =================================
+   CHARMANDER
+================================= */
+
+.charmander {
+
+    /*
+       Tamanho visual do Charmander
+    */
+
+    width: 110px;
+    height: 120px;
+
+
+    /*
+       Sprite sheet
+    */
+
+    background-image: url("assets/charmander-sheet.png");
+
+    background-repeat: no-repeat;
+
+
+    /*
+       A imagem possui 3 colunas.
+       Vamos mostrar uma coluna por vez.
+    */
+
+    background-size: 300% 300%;
+
+
+    /*
+       Começa no primeiro frame
+    */
+
+    background-position: 0% 0%;
+
+
+    /*
+       Animação
+    */
+
+    animation: andarCharmander 0.6s steps(1) infinite;
+
+
+    /*
+       Mantém o pixel art
+    */
+
+    image-rendering: pixelated;
+
+}
+
+
+/* =================================
+   ANIMAÇÃO DO CHARMANDER
+================================= */
+
+@keyframes andarCharmander {
+
+    /*
+       FRAME 1
+    */
+
+    0% {
+        background-position: 0% 0%;
+    }
+
+
+    /*
+       FRAME 2
+    */
+
+    33% {
+        background-position: 50% 0%;
+    }
+
+
+    /*
+       FRAME 3
+    */
+
+    66% {
+        background-position: 100% 0%;
+    }
+
+
+    /*
+       Volta para o primeiro
+    */
+
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+
+/* =================================
+   BOTÕES
+================================= */
+
+.botoes-menu {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.botao {
+
+    width: 280px;
+
+    height: 55px;
+
+    border: 3px solid #2455a4;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: #222;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+
+    transition:
+        transform 0.15s,
+        background 0.15s,
+        color 0.15s,
+        box-shadow 0.15s;
+}
+
+
+/* =================================
+   BOTÃO AO PASSAR O MOUSE
+================================= */
+
+.botao:hover {
+
+    transform: scale(1.05);
+
+    background: #ffd21c;
+
+    color: #1b3d78;
+
+    box-shadow:
+        0 0 15px rgba(255, 210, 28, 0.7);
+}
+
+
+/* =================================
+   BOTÃO PRESSIONADO
+================================= */
+
+.botao:active {
+
+    transform: scale(0.97);
+
+}
+
+
+/* =================================
+   VERSÃO
+================================= */
+
+.versao {
+
+    position: absolute;
+
+    bottom: 15px;
+
+    color: #aaaaaa;
+
+    font-size: 13px;
+}
+/* =================================
+   TELAS
+================================= */
+
+.tela {
+    width: 100%;
+    height: 100vh;
+}
+
+
+/* =================================
+   ESCONDER TELAS
+================================= */
+
+#como-jogar,
+#creditos {
+    display: none;
+}
+
+
+/* =================================
+   TELAS SECUNDÁRIAS
+================================= */
+
+.tela-secundaria {
+
+    display: none;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #3a3a3a 0%,
+            #202020 45%,
+            #101010 100%
+        );
+
+    color: white;
+}
+
+
+/* =================================
+   TÍTULO DAS TELAS
+================================= */
+
+.tela-secundaria h1 {
+
+    margin-bottom: 30px;
+
+    font-size: 48px;
+
+    color: #ffd21c;
+
+    text-shadow:
+        3px 3px 0 #2455a4;
+
+}
+
+
+/* =================================
+   CAIXA DE INFORMAÇÃO
+================================= */
+
+.caixa-informacao {
+
+    width: 600px;
+
+    max-width: 90%;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    border: 3px solid #2455a4;
+
+    border-radius: 15px;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    text-align: center;
+
+    line-height: 1.5;
+
+}
+
+
+.caixa-informacao h2 {
+
+    color: #ffd21c;
+
+    margin-bottom: 8px;
+
+}
+
+
+.caixa-informacao p {
+
+    font-size: 18px;
+
+}
+/* =================================
+   TELA DO JOGO
+================================= */
+
+.tela-jogo {
+
+    display: none;
+
+    width: 100%;
+    height: 100vh;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #286b35;
+}
+
+
+/* =================================
+   HUD
+================================= */
+
+.hud {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    z-index: 10;
+}
+
+
+.hud-item {
+
+    min-width: 150px;
+
+}
+
+
+/* =================================
+   ARENA
+================================= */
+
+.arena {
+
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    /*
+       Pequeno padrão no chão
+    */
+
+    background-color: #4c9948;
+
+    background-image:
+        radial-gradient(
+            rgba(255, 255, 255, 0.08) 2px,
+            transparent 2px
+        );
+
+    background-size: 40px 40px;
+
+}
+
+
+/* =================================
+   JOGADOR
+================================= */
+
+.jogador {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 100px;
+    height: 120px;
+
+    z-index: 5;
+
+}
+
+
+/* =================================
+   CHARMANDER DO JOGO
+================================= */
+
+.charmander-jogo {
+    width: 100%;
+    height: 100%;
+
+    background-image: url("assets/charmander-sheet.png");
+
+    background-repeat: no-repeat;
+
+    background-size: 300% 300%;
+
+    background-position: 0% 0%;
+
+    image-rendering: pixelated;
+
+    animation: andarCharmanderJogo 0.6s steps(1) infinite;
+}
+
+
+@keyframes andarCharmanderJogo {
+
+    0% {
+        background-position: 0% 0%;
+    }
+
+    33% {
+        background-position: 50% 0%;
+    }
+
+    66% {
+        background-position: 100% 0%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+/* =================================
+   INIMIGOS
+================================= */
+
+.inimigo {
+
+    position: absolute;
+
+    font-size: 45px;
+
+    z-index: 4;
+
+}
+
+
+/* Posições temporárias */
+
+.inimigo-1 {
+
+    top: 25%;
+
+    left: 20%;
+
+}
+
+
+.inimigo-2 {
+
+    top: 35%;
+
+    right: 20%;
+
+}
+
+
+.inimigo-3 {
+
+    bottom: 20%;
+
+    left: 35%;
+
+}
+/* =========================
+   TELA DO QUIZ
+========================= */
+
+.tela-quiz {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, #3a3a3a 0%, #202020 45%, #101010 100%);
+    color: white;
+}
+
+.quiz-caixa {
+    width: 650px;
+    max-width: 90%;
+    padding: 40px;
+    border: 4px solid #2455a4;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.75);
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+}
+
+.quiz-caixa h1 {
+    margin-bottom: 10px;
+    font-size: 38px;
+    color: #ffd21c;
+    text-shadow: 3px 3px 0 #2455a4;
+}
+
+.quiz-caixa h2 {
+    margin-bottom: 30px;
+    font-size: 22px;
+    color: #ffffff;
+}
+
+#quiz-pergunta {
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.quiz-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.opcao {
+    width: 100%;
+    min-height: 55px;
+    padding: 10px 20px;
+    border: 3px solid #2455a4;
+    border-radius: 12px;
+    background: white;
+    color: #222;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.opcao:hover {
+    transform: scale(1.02);
+    background: #ffd21c;
+    color: #1b3d78;
+}
+/* ========================================
+   TELA DE EVOLUÇÃO
+======================================== */
+
+.tela-evolucao {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, #3a3a3a 0%, #202020 45%, #101010 100%);
+    color: white;
+}
+
+.evolucao-caixa {
+    width: 700px;
+    max-width: 90%;
+    padding: 40px;
+    border: 4px solid #2455a4;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.75);
+    text-align: center;
+}
+
+.evolucao-caixa h1 {
+    margin-bottom: 10px;
+    font-size: 40px;
+    color: #ffd21c;
+    text-shadow: 3px 3px 0 #2455a4;
+}
+
+.texto-evolucao {
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.pokemon-evolucao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-bottom: 30px;
+}
+
+.pokemon-antigo,
+.pokemon-novo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pokemon-antigo p,
+.pokemon-novo p {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.seta-evolucao {
+    font-size: 50px;
+    color: #ffd21c;
+    font-weight: bold;
+}
+
+.sprite-evolucao {
+    width: 120px;
+    height: 130px;
+    background-repeat: no-repeat;
+    background-size: 300% 300%;
+    background-position: 0% 0%;
+    image-rendering: pixelated;
+}
+
+/* Charmander */
+
+.charmander-evolucao {
+    background-image: url("assets/charmander-sheet.png");
+}
+
+/* Charmeleon */
+
+.charmeleon-evolucao {
+    background-image: url("assets/charmeleon-sheet.png");
+}
