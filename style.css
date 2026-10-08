@@ -346,9 +346,15 @@ body {
     animation: andarCharmeleonJogo 0.6s steps(1) infinite;
 }
 
-.charizard-jogo.andando,
-.megacharizard-jogo.andando {
+.charizard-jogo.andando {
     animation: andarPokemonJogo 0.6s steps(1) infinite;
+}
+
+/* Mega Charizard usa a ordem invertida da folha:
+   esquerda -> frente -> direita. Como as colunas foram invertidas,
+   a caminhada fica direita -> frente -> esquerda. */
+.megacharizard-jogo.andando {
+    animation: andarMegaCharizardJogo 0.6s steps(1) infinite;
 }
 
 @keyframes andarCharmeleonJogo {
@@ -363,6 +369,13 @@ body {
     33.333% { background-position: 50% 0%; }
     66.666% { background-position: 100% 0%; }
     100% { background-position: 0% 0%; }
+}
+
+@keyframes andarMegaCharizardJogo {
+    0% { background-position: 100% 40%; }
+    33.333% { background-position: 50% 40%; }
+    66.666% { background-position: 0% 40%; }
+    100% { background-position: 100% 40%; }
 }
 
 /* =================================
