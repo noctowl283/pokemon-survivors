@@ -9,8 +9,11 @@ const musicaJogo = new Audio(
     "assets/" + encodeURIComponent(nomeMusica)
 );
 
+const volumeSalvo = localStorage.getItem("pokemonSurvivorsVolume");
+const volumeInicial = volumeSalvo !== null ? Number(volumeSalvo) : 0.45;
+
 musicaJogo.loop = true;
-musicaJogo.volume = 0.45;
+musicaJogo.volume = Math.min(1, Math.max(0, volumeInicial));
 musicaJogo.preload = "auto";
 
 const telaAtual = document.body.dataset.tela;
@@ -75,6 +78,76 @@ if (telaAtual === "menu") {
     sessionStorage.removeItem("pokemonSurvivorsMusica");
     pararMusica();
 }
+
+
+// ========================================
+// MENU DA PARTIDA E VOLUME
+// ========================================
+
+const abrirMenuJogo = document.getElementById("abrir-menu-jogo");
+const fecharMenuJogo = document.getElementById("fechar-menu-jogo");
+const menuOverlay = document.getElementById("menu-overlay");
+const controleVolume = document.getElementById("controle-volume");
+const valorVolume = document.getElementById("valor-volume");
+
+function atualizarValorVolume() {
+    if (!controleVolume || !valorVolume) {
+        return;
+    }
+
+    const percentual = Math.round(Number(controleVolume.value) * 100);
+    valorVolume.textContent = percentual + "%";
+}
+
+if (controleVolume) {
+    controleVolume.value = String(musicaJogo.volume);
+    atualizarValorVolume();
+
+    controleVolume.addEventListener("input", function() {
+        const volume = Number(controleVolume.value);
+
+        musicaJogo.volume = Math.min(1, Math.max(0, volume));
+        localStorage.setItem("pokemonSurvivorsVolume", String(musicaJogo.volume));
+
+        atualizarValorVolume();
+    });
+}
+
+function abrirMenuPartida() {
+    if (menuOverlay) {
+        menuOverlay.hidden = false;
+    }
+}
+
+function fecharMenuPartida() {
+    if (menuOverlay) {
+        menuOverlay.hidden = true;
+    }
+}
+
+if (abrirMenuJogo) {
+    abrirMenuJogo.addEventListener("click", abrirMenuPartida);
+}
+
+if (fecharMenuJogo) {
+    fecharMenuJogo.addEventListener("click", fecharMenuPartida);
+}
+
+// Clicar na área escura fora do painel também fecha o menu.
+if (menuOverlay) {
+    menuOverlay.addEventListener("click", function(event) {
+        if (event.target === menuOverlay) {
+            fecharMenuPartida();
+        }
+    });
+}
+
+// ESC fecha o menu, sem sair da partida.
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        fecharMenuPartida();
+    }
+});
 
 
 // ========================================
