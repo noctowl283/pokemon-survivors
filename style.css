@@ -372,10 +372,26 @@ body {
 }
 
 @keyframes andarMegaCharizardJogo {
-    0% { background-position: 100% 40%; }
-    33.333% { background-position: 50% 40%; }
-    66.666% { background-position: 0% 40%; }
-    100% { background-position: 100% 40%; }
+    /* Pequena compensação vertical para manter os 3 sprites na mesma altura. */
+    0% {
+        background-position: 100% 40%;
+        top: 1px;
+    }
+
+    33.333% {
+        background-position: 50% 40%;
+        top: 0;
+    }
+
+    66.666% {
+        background-position: 0% 40%;
+        top: 1px;
+    }
+
+    100% {
+        background-position: 100% 40%;
+        top: 1px;
+    }
 }
 
 /* =================================
