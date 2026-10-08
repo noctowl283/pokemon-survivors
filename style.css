@@ -427,7 +427,7 @@ body {
     background-image: url("assets/charmander-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 53% 0%;
+    background-position: 50% 0%;
     image-rendering: pixelated;
 }
 
@@ -444,16 +444,16 @@ body {
 .charmeleon-jogo.direcao-left { --linha-sprite: 100%; }
 
 .charmander-jogo.direcao-down {
-    background-position: 53% 0%;
+    background-position: 50% 0%;
 }
 
 .charmander-jogo.direcao-up {
-    background-position: 53% 50%;
+    background-position: 50% 50%;
 }
 
 .charmander-jogo.direcao-right,
 .charmander-jogo.direcao-left {
-    background-position: 53% 100%;
+    background-position: 50% 100%;
 }
 
 .charmander-jogo.direcao-right {
@@ -485,7 +485,7 @@ body {
     background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% -6%;
+    background-position: 50% 0%;
     image-rendering: pixelated;
 
     /* Tamanho/altura definidos anteriormente pelo usuário. */
@@ -611,10 +611,10 @@ body {
 }
 
 @keyframes andarCharmeleonJogo {
-    0% { background-position: 0% calc(var(--linha-sprite) - 6%); }
-    33.333% { background-position: 50% calc(var(--linha-sprite) - 6%); }
-    66.666% { background-position: 100% calc(var(--linha-sprite) - 6%); }
-    100% { background-position: 0% calc(var(--linha-sprite) - 6%); }
+    0% { background-position: 0% var(--linha-sprite); }
+    33.333% { background-position: 50% var(--linha-sprite); }
+    66.666% { background-position: 100% var(--linha-sprite); }
+    100% { background-position: 0% var(--linha-sprite); }
 }
 
 @keyframes andarPokemonJogo {
