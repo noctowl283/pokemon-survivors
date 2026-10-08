@@ -326,6 +326,13 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
         </div>
 
         <p class="versao">Versão 1.0</p>
+
+        <form method="post" class="form-teste-quiz">
+            <input type="hidden" name="acao" value="quiz">
+            <button class="botao-teste-quiz" type="submit">
+                TESTAR QUIZ
+            </button>
+        </form>
     </main>
 
 <?php elseif ($tela === "como-jogar"): ?>
@@ -404,10 +411,45 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
                 ⏱ <span id="tempo">00:00</span>
             </div>
 
-            <form method="post" class="form-menu-jogo">
-                <input type="hidden" name="acao" value="menu">
-                <button class="botao-menu-jogo" type="submit">MENU</button>
-            </form>
+            <button class="botao-menu-jogo" id="abrir-menu-jogo" type="button">
+                MENU
+            </button>
+        </div>
+
+        <div class="menu-overlay" id="menu-overlay" hidden>
+            <div class="menu-painel">
+                <h2>MENU</h2>
+
+                <div class="controle-volume">
+                    <label for="controle-volume">🔊 VOLUME DA MÚSICA</label>
+
+                    <div class="volume-linha">
+                        <span>0%</span>
+                        <input
+                            id="controle-volume"
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value="0.45"
+                        >
+                        <span>100%</span>
+                    </div>
+
+                    <strong id="valor-volume">45%</strong>
+                </div>
+
+                <button class="botao" id="fechar-menu-jogo" type="button">
+                    CONTINUAR
+                </button>
+
+                <form method="post">
+                    <input type="hidden" name="acao" value="menu">
+                    <button class="botao botao-voltar-menu" type="submit">
+                        VOLTAR AO MENU
+                    </button>
+                </form>
+            </div>
         </div>
 
         <div class="arena">
