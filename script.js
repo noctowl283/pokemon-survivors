@@ -1,4 +1,69 @@
 // ========================================
+// MÚSICA DA PARTIDA
+// ========================================
+
+const nomeMusica =
+    "Pokemon FireRed_LeafGreen Music- Wild Pokemon Battle [fbHBSDQ_UZ0].mp3";
+
+const musicaJogo = new Audio(
+    "assets/" + encodeURIComponent(nomeMusica)
+);
+
+musicaJogo.loop = true;
+musicaJogo.volume = 0.45;
+musicaJogo.preload = "auto";
+
+const telaAtual = document.body.dataset.tela;
+const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
+
+function iniciarMusica() {
+    musicaJogo.play().catch(function() {
+        // O navegador pode bloquear a reprodução automática.
+        // O próximo clique/tecla do usuário poderá liberar a música.
+    });
+}
+
+function pararMusica() {
+    musicaJogo.pause();
+    musicaJogo.currentTime = 0;
+}
+
+// Ao entrar em qualquer tela durante a partida,
+// tenta continuar a música em loop.
+if (telaAtual !== "menu" && musicaAtiva) {
+    iniciarMusica();
+}
+
+// Apertar JOGAR inicia a música e marca a partida como ativa.
+document.querySelectorAll("form").forEach(function(form) {
+    const acao = form.querySelector('input[name="acao"]');
+
+    if (!acao) {
+        return;
+    }
+
+    form.addEventListener("submit", function() {
+        if (acao.value === "jogar") {
+            sessionStorage.setItem("pokemonSurvivorsMusica", "on");
+            iniciarMusica();
+        }
+
+        if (acao.value === "menu") {
+            sessionStorage.removeItem("pokemonSurvivorsMusica");
+            pararMusica();
+        }
+    });
+});
+
+// Se a tela atual for o menu, garante que não exista
+// uma marcação antiga de partida com música ativa.
+if (telaAtual === "menu") {
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    pararMusica();
+}
+
+
+// ========================================
 // MOVIMENTO — PESSOA 1
 // ========================================
 
