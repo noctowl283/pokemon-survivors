@@ -262,6 +262,10 @@ body {
 .jogador > div {
     position: relative;
     z-index: 1;
+
+    /* Posição do sprite parado. A animação substitui este valor
+       pelos offsets do frame atual enquanto estiver andando. */
+    translate: var(--parado-x, 0px) var(--parado-y, 0px);
 }
 
 /* =================================
