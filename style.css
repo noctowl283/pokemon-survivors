@@ -308,13 +308,22 @@ body {
     transform-origin: center bottom;
 }
 
-.charizard-jogo,
+.charizard-jogo{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 350% 300%;
+    background-position: 50% -7%;
+    image-rendering: pixelated;
+    position: relative;
+    transform-origin: center bottom;
+}
 .megacharizard-jogo {
     width: 100%;
     height: 100%;
     background-repeat: no-repeat;
-    background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-size: 350% 300%;
+    background-position: 50% 40%;
     image-rendering: pixelated;
     position: relative;
     transform-origin: center bottom;
@@ -323,13 +332,13 @@ body {
 /* Charizard normal. */
 .charizard-jogo {
     background-image: url("assets/charizard_sheets.png");
-    transform: scale(1.12);
+    transform: scale(1.52);
 }
 
 /* Mega Charizard X. */
 .megacharizard-jogo {
     background-image: url("assets/megacharizard_sheets.png");
-    transform: scale(1.18);
+    transform: scale(1.67);
 }
 
 /* Todas as formas usam os 3 frames da caminhada. */
