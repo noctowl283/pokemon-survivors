@@ -77,8 +77,8 @@ body {
     height: 120px;
     background-image: url("assets/charmander-sheet.png");
     background-repeat: no-repeat;
-    background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-size: 299% 300%;
+    background-position: 53% 0%;
     image-rendering: pixelated;
 }
 
@@ -274,7 +274,7 @@ body {
     background-image: url("assets/charmander-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-position: 53% 0%;
     image-rendering: pixelated;
 }
 
@@ -299,12 +299,12 @@ body {
     background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-position: 50% -6%;
     image-rendering: pixelated;
 
     /* Somente o Charmeleon fica maior e sua base fica alinhada à do jogador. */
     position: relative;
-    transform: scale(1.35);
+    transform: scale(1.39);
     transform-origin: center bottom;
 }
 
@@ -313,10 +313,10 @@ body {
 }
 
 @keyframes andarCharmeleonJogo {
-    0% { background-position: 0% 0%; }
-    33.333% { background-position: 50% 0%; }
-    66.666% { background-position: 100% 0%; }
-    100% { background-position: 0% 0%; }
+    0% { background-position: 0% -6%; }
+    33.333% { background-position: 50% -6%; }
+    66.666% { background-position: 100% -6%; }
+    100% { background-position: 0% -6%; }
 }
 
 /* =================================
