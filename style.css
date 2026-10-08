@@ -379,22 +379,22 @@ body {
        evitando o efeito de "balanço" lateral.
     */
     0% {
-        background-position: 93.333% 40%;
+        background-position: 96% 37%;
         top: 0;
     }
 
     33.333% {
-        background-position: 46.667% 40%;
+        background-position: 50% 40%;
         top: 0;
     }
 
     66.666% {
-        background-position: 0% 40%;
+        background-position: 2% 38%;
         top: 0;
     }
 
     100% {
-        background-position: 93.333% 40%;
+        background-position: 96% 37%;
         top: 0;
     }
 }
