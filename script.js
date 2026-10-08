@@ -9,6 +9,15 @@ document.addEventListener("keydown", function(event) {
 
     if (["w", "a", "s", "d"].includes(tecla)) {
         teclas[tecla] = true;
+
+        const direcoes = {
+            w: "up",
+            s: "down",
+            a: "left",
+            d: "right"
+        };
+
+        atualizarDirecaoSprite(direcoes[tecla]);
         atualizarAnimacaoJogador();
     }
 });
@@ -21,6 +30,23 @@ document.addEventListener("keyup", function(event) {
         atualizarAnimacaoJogador();
     }
 });
+
+function atualizarDirecaoSprite(direcao) {
+    const sprite = document.querySelector(".jogador > div");
+
+    if (!sprite || !direcao) {
+        return;
+    }
+
+    sprite.classList.remove(
+        "direcao-up",
+        "direcao-down",
+        "direcao-left",
+        "direcao-right"
+    );
+
+    sprite.classList.add("direcao-" + direcao);
+}
 
 function atualizarAnimacaoJogador() {
     const sprite = document.querySelector(".jogador > div");
@@ -37,6 +63,9 @@ function atualizarAnimacaoJogador() {
 
     sprite.classList.toggle("andando", andando);
 }
+
+// Começa olhando para baixo, usando o frame central.
+atualizarDirecaoSprite("down");
 
 function moverPlayer() {
     if (typeof player === "undefined" || !player.podeMover) {
@@ -62,6 +91,8 @@ function moverPlayer() {
         player.x += player.velocidade;
         player.direcao = "right";
     }
+
+    atualizarDirecaoSprite(player.direcao);
 }
 
 
