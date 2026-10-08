@@ -290,33 +290,52 @@ body {
 }
 
 /* =================================
-   CHARMELEON DO JOGO
+   EVOLUÇÕES DO JOGADOR
 ================================= */
 
-.charmeleon-jogo {
+.charmeleon-jogo,
+.charizard-jogo,
+.megacharizard-jogo {
     width: 100%;
     height: 100%;
-    background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% -6%;
+    background-position: 50% 0%;
     image-rendering: pixelated;
-
-    /* Somente o Charmeleon fica maior e sua base fica alinhada à do jogador. */
     position: relative;
-    transform: scale(1.39);
     transform-origin: center bottom;
 }
 
-.charmeleon-jogo.andando {
-    animation: andarCharmeleonJogo 0.6s steps(1) infinite;
+/* Tamanho do Charmeleon, mantido maior que o Charmander. */
+.charmeleon-jogo {
+    background-image: url("assets/charmeleon-sheet.png");
+    transform: scale(1.39);
 }
 
-@keyframes andarCharmeleonJogo {
-    0% { background-position: 0% -6%; }
-    33.333% { background-position: 50% -6%; }
-    66.666% { background-position: 100% -6%; }
-    100% { background-position: 0% -6%; }
+/* Charizard normal. */
+.charizard-jogo {
+    background-image: url("assets/charizard_sheets.png");
+    transform: scale(1.12);
+}
+
+/* Mega Charizard X. */
+.megacharizard-jogo {
+    background-image: url("assets/megacharizard_sheets.png");
+    transform: scale(1.18);
+}
+
+/* Todas as formas usam os 3 frames da caminhada. */
+.charmeleon-jogo.andando,
+.charizard-jogo.andando,
+.megacharizard-jogo.andando {
+    animation: andarPokemonJogo 0.6s steps(1) infinite;
+}
+
+@keyframes andarPokemonJogo {
+    0% { background-position: 0% 0%; }
+    33.333% { background-position: 50% 0%; }
+    66.666% { background-position: 100% 0%; }
+    100% { background-position: 0% 0%; }
 }
 
 /* =================================
@@ -477,14 +496,42 @@ body {
     background-image: url("assets/charmander-sheet.png");
 }
 
-.evolucao-animacao .charmeleon-evolucao {
-    background-image: url("assets/charmeleon-sheet.png");
+.evolucao-animacao .pokemon-entrada {
     transform-origin: center bottom;
-    animation: aparecerCharmeleon 4.2s ease-in-out forwards;
+    animation: aparecerPokemon 4.2s ease-in-out forwards;
 }
 
 .pokemon-saida {
     animation: virarBola 4.2s ease-in-out forwards;
+}
+
+.charmeleon-evolucao {
+    background-image: url("assets/charmeleon-sheet.png");
+}
+
+.charizard-evolucao {
+    background-image: url("assets/charizard_sheets.png");
+}
+
+.megacharizard-evolucao {
+    background-image: url("assets/megacharizard_sheets.png");
+}
+
+/* Pedra da Mega Evolução orbitando a bola branca. */
+.pedra-evolucao {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 42px;
+    height: 42px;
+    background-image: url("assets/charizardite.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    image-rendering: pixelated;
+    z-index: 5;
+    opacity: 0;
+    animation: orbitarPedra 4.2s linear forwards;
 }
 
 .bola-evolucao {
@@ -567,7 +614,7 @@ body {
     }
 }
 
-@keyframes aparecerCharmeleon {
+@keyframes aparecerPokemon {
     0% {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.2);
@@ -580,17 +627,49 @@ body {
 
     82% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1.18);
+        transform: translate(-50%, -50%) scale(1.02);
     }
 
     92% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.38);
+        transform: translate(-50%, -50%) scale(1.18);
     }
 
     100% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.35);
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+}
+
+@keyframes orbitarPedra {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(0deg) translateX(100px) rotate(0deg);
+    }
+
+    15% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(54deg) translateX(100px) rotate(-54deg);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(108deg) translateX(100px) rotate(-108deg);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(198deg) translateX(100px) rotate(-198deg);
+    }
+
+    78% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(280deg) translateX(100px) rotate(-280deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(360deg) translateX(100px) rotate(-360deg);
     }
 }
 
