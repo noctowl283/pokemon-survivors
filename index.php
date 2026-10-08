@@ -131,6 +131,13 @@ $pokemons = [
     ]
 ];
 
+$ordemEvolucao = [
+    "charmander",
+    "charmeleon",
+    "charizard",
+    "megacharizard"
+];
+
 if (!isset($_SESSION["tela"])) {
     $_SESSION["tela"] = "menu";
 }
@@ -162,6 +169,19 @@ function redirecionar(): void
     exit;
 }
 
+function resetarPartida(): void
+{
+    resetarPartida();
+    $_SESSION["evolucao_de"] = "charmander";
+    $_SESSION["evolucao_para"] = "charmeleon";
+}
+
+function iniciarPartida(): void
+{
+    resetarPartida();
+    $_SESSION["tela"] = "jogo";
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "GET"
     && !isset($_GET["acao"])
     && !isset($_GET["continuar"])) {
@@ -185,14 +205,7 @@ if ($acao !== "") {
 
     switch ($acao) {
         case "jogar":
-            $_SESSION["tela"] = "jogo";
-            $_SESSION["nivel"] = 1;
-            $_SESSION["pokemon"] = "charmander";
-            $_SESSION["pergunta_atual"] = null;
-            $_SESSION["ultima_pergunta"] = -1;
-            $_SESSION["mensagem"] = "";
-            $_SESSION["evolucao_de"] = "charmander";
-            $_SESSION["evolucao_para"] = "charmeleon";
+            iniciarPartida();
             redirecionar();
 
         case "como-jogar":
@@ -205,14 +218,7 @@ if ($acao !== "") {
 
         case "menu":
             // Voltar ao menu encerra a partida e apaga todo o progresso.
-            $_SESSION["tela"] = "menu";
-            $_SESSION["nivel"] = 1;
-            $_SESSION["pokemon"] = "charmander";
-            $_SESSION["pergunta_atual"] = null;
-            $_SESSION["ultima_pergunta"] = -1;
-            $_SESSION["mensagem"] = "";
-            $_SESSION["evolucao_de"] = "charmander";
-            $_SESSION["evolucao_para"] = "charmeleon";
+            resetarPartida();
             redirecionar();
 
         case "quiz":
@@ -231,13 +237,6 @@ if ($acao !== "") {
             }
 
             if ($resposta === $perguntasQuiz[$indice]["correta"]) {
-                $ordemEvolucao = [
-                    "charmander",
-                    "charmeleon",
-                    "charizard",
-                    "megacharizard"
-                ];
-
                 $pokemonAtual = $_SESSION["pokemon"];
                 $posicaoAtual = array_search($pokemonAtual, $ordemEvolucao, true);
 
