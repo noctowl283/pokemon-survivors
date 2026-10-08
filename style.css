@@ -268,74 +268,87 @@ body {
    PAINEL DE AJUSTE DOS SPRITES
 =================================
 
-   Para corrigir o "balanço" de uma animação, altere somente
-   os valores --frame-1-y / --frame-2-y / --frame-3-y do Pokémon.
+   Aqui você ajusta a posição VISUAL de cada sprite.
 
-   Para corrigir o deslocamento horizontal de cada frame, altere
-   --frame-1-x / --frame-2-x / --frame-3-x.
+   Use PX, não background-position:
 
-   Exemplos:
-   --frame-1-y: -2%;  -> sobe o frame 1
-   --frame-2-y:  0%;  -> mantém o frame 2
-   --frame-3-y:  2%;  -> desce o frame 3
+   --parado-x / --parado-y
+       Move o Pokémon quando está parado.
 
-   NÃO é preciso mexer nas keyframes abaixo.
+   --frame-1-x / --frame-1-y
+   --frame-2-x / --frame-2-y
+   --frame-3-x / --frame-3-y
+       Move cada um dos 3 frames da caminhada.
+
+   Exemplo:
+       --parado-x: -4px;
+       -> sprite parado 4px para a esquerda.
+
+       --frame-2-y: 3px;
+       -> o frame 2 da caminhada fica 3px mais para baixo.
+
+   Os valores de background-position abaixo continuam responsáveis
+   apenas por escolher a coluna/linha da sheet.
 ================================= */
 
 /* CHARMANDER */
 .charmander-jogo {
-    --frame-1-x: 0%;
-    --frame-2-x: 50%;
-    --frame-3-x: 100%;
+    --parado-x: 0px;
+    --parado-y: 0px;
 
-    --frame-1-y: 0%;
-    --frame-2-y: 0%;
-    --frame-3-y: 0%;
+    --frame-1-x: 0px;
+    --frame-1-y: 0px;
 
-    --sprite-idle-x: 53%;
+    --frame-2-x: 0px;
+    --frame-2-y: 0px;
+
+    --frame-3-x: 0px;
+    --frame-3-y: 0px;
 }
 
 /* CHARMELEON */
 .charmeleon-jogo {
-    --frame-1-x: 0%;
-    --frame-2-x: 50%;
-    --frame-3-x: 100%;
+    --parado-x: 0px;
+    --parado-y: 0px;
 
-    --frame-1-y: -6%;
-    --frame-2-y: -6%;
-    --frame-3-y: -6%;
+    --frame-1-x: 0px;
+    --frame-1-y: 0px;
 
-    --sprite-idle-x: 50%;
+    --frame-2-x: 0px;
+    --frame-2-y: 0px;
+
+    --frame-3-x: 0px;
+    --frame-3-y: 0px;
 }
 
 /* CHARIZARD */
 .charizard-jogo {
-    --frame-1-x: 0%;
-    --frame-2-x: 50%;
-    --frame-3-x: 100%;
+    --parado-x: 0px;
+    --parado-y: 0px;
 
-    --frame-1-y: 0%;
-    --frame-2-y: 0%;
-    --frame-3-y: 0%;
+    --frame-1-x: 0px;
+    --frame-1-y: 0px;
 
-    --sprite-idle-x: 50%;
+    --frame-2-x: 0px;
+    --frame-2-y: 0px;
+
+    --frame-3-x: 0px;
+    --frame-3-y: 0px;
 }
 
 /* MEGA CHARIZARD */
 .megacharizard-jogo {
-    /*
-       Você inverteu as colunas desta sheet, então preservamos
-       a ordem atual da animação.
-    */
-    --frame-1-x: 96%;
-    --frame-2-x: 50%;
-    --frame-3-x: 2%;
+    --parado-x: 0px;
+    --parado-y: 0px;
 
-    --frame-1-y: 0%;
-    --frame-2-y: 0%;
-    --frame-3-y: 0%;
+    --frame-1-x: 0px;
+    --frame-1-y: 0px;
 
-    --sprite-idle-x: 50%;
+    --frame-2-x: 0px;
+    --frame-2-y: 0px;
+
+    --frame-3-x: 0px;
+    --frame-3-y: 0px;
 }
 
 /* =================================
@@ -366,6 +379,7 @@ body {
 
 .charmander-jogo.direcao-down {
     background-position: 53% 0%;
+    translate: var(--parado-x) var(--parado-y);
 }
 
 .charmander-jogo.direcao-up {
@@ -391,16 +405,20 @@ body {
 
 @keyframes andarCharmanderJogo {
     0% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
     33.333% {
-        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+        background-position: 50% var(--linha-sprite);
+        translate: var(--frame-2-x) var(--frame-2-y);
     }
     66.666% {
-        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+        background-position: 100% var(--linha-sprite);
+        translate: var(--frame-3-x) var(--frame-3-y);
     }
     100% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
 }
 
@@ -414,7 +432,7 @@ body {
     background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: var(--sprite-idle-x) var(--frame-2-y);
+    background-position: 50% -6%;
     image-rendering: pixelated;
 
     /* Tamanho/altura definidos anteriormente pelo usuário. */
@@ -429,6 +447,11 @@ body {
 
 .charmeleon-jogo.direcao-left {
     transform: scale(1.39);
+    translate: var(--parado-x) var(--parado-y);
+}
+
+.charmeleon-jogo.direcao-right {
+    translate: var(--parado-x) var(--parado-y);
 }
 
 .charizard-jogo{
@@ -445,6 +468,7 @@ body {
 /* Charizard: 1ª linha = baixo, 2ª = cima, 3ª = direita. */
 .charizard-jogo.direcao-down {
     background-position: 50% -7%;
+    translate: var(--parado-x) var(--parado-y);
 }
 
 .charizard-jogo.direcao-up {
@@ -462,6 +486,12 @@ body {
 
 .charizard-jogo.direcao-left {
     transform: scale(1.52);
+    translate: var(--parado-x) var(--parado-y);
+}
+
+.charizard-jogo.direcao-right,
+.charizard-jogo.direcao-up {
+    translate: var(--parado-x) var(--parado-y);
 }
 
 .megacharizard-jogo {
@@ -483,6 +513,7 @@ body {
 
 .megacharizard-jogo.direcao-down {
     background-position: 50% 40%;
+    translate: var(--parado-x) var(--parado-y);
 }
 
 .megacharizard-jogo.direcao-up {
@@ -495,6 +526,12 @@ body {
 
 .megacharizard-jogo.direcao-left {
     transform: scale(1.67);
+    translate: var(--parado-x) var(--parado-y);
+}
+
+.megacharizard-jogo.direcao-right,
+.megacharizard-jogo.direcao-up {
+    translate: var(--parado-x) var(--parado-y);
 }
 
 /* Linhas usadas pelas animações das sheets. */
@@ -541,49 +578,61 @@ body {
 
 @keyframes andarCharmeleonJogo {
     0% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% calc(var(--linha-sprite) - 6%);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
     33.333% {
-        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+        background-position: 50% calc(var(--linha-sprite) - 6%);
+        translate: var(--frame-2-x) var(--frame-2-y);
     }
     66.666% {
-        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+        background-position: 100% calc(var(--linha-sprite) - 6%);
+        translate: var(--frame-3-x) var(--frame-3-y);
     }
     100% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% calc(var(--linha-sprite) - 6%);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
 }
 
 @keyframes andarPokemonJogo {
     0% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
     33.333% {
-        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+        background-position: 50% var(--linha-sprite);
+        translate: var(--frame-2-x) var(--frame-2-y);
     }
     66.666% {
-        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+        background-position: 100% var(--linha-sprite);
+        translate: var(--frame-3-x) var(--frame-3-y);
     }
     100% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 0% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
 }
 
 @keyframes andarMegaCharizardJogo {
     0% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 96% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
 
     33.333% {
-        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+        background-position: 50% var(--linha-sprite);
+        translate: var(--frame-2-x) var(--frame-2-y);
     }
 
     66.666% {
-        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+        background-position: 2% var(--linha-sprite);
+        translate: var(--frame-3-x) var(--frame-3-y);
     }
 
     100% {
-        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+        background-position: 96% var(--linha-sprite);
+        translate: var(--frame-1-x) var(--frame-1-y);
     }
 }
 
