@@ -520,6 +520,9 @@ body {
     width: 100%;
     height: 100%;
 
+    /* Sombra do personagem no chão */
+    filter: drop-shadow(0 8px 4px rgba(0, 0, 0, 0.40));
+
     background-image: url("assets/charmander-sheet.png");
 
     background-repeat: no-repeat;
@@ -567,6 +570,14 @@ body {
     background-position: 0% 0%;
 
     image-rendering: pixelated;
+
+    /* Charmeleon é maior que o Charmander para destacar a evolução */
+    transform: scale(1.35);
+    transform-origin: center bottom;
+
+    /* Sombra do personagem no chão */
+    filter: drop-shadow(0 10px 4px rgba(0, 0, 0, 0.45));
+
     animation: andarCharmeleonJogo 0.6s steps(1) infinite;
 }
 
@@ -767,6 +778,8 @@ body {
     width: 120px;
     height: 130px;
     background-repeat: no-repeat;
+
+    filter: drop-shadow(0 8px 4px rgba(0, 0, 0, 0.40));
     background-size: 300% 300%;
     background-position: 0% 0%;
     image-rendering: pixelated;
@@ -782,4 +795,6 @@ body {
 
 .charmeleon-evolucao {
     background-image: url("assets/charmeleon-sheet.png");
+    transform: scale(1.25);
+    transform-origin: center bottom;
 }
