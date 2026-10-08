@@ -298,7 +298,9 @@ body {
     background-position: 0% 0%;
     image-rendering: pixelated;
 
-    /* Somente o Charmeleon fica maior */
+    /* Somente o Charmeleon fica maior. A base continua no chão. */
+    position: relative;
+    top: 7px;
     transform: scale(1.35);
     transform-origin: center bottom;
 
@@ -479,6 +481,33 @@ body {
 
 .charmeleon-evolucao {
     background-image: url("assets/charmeleon-sheet.png");
+    position: relative;
+    top: 6px;
     transform: scale(1.25);
     transform-origin: center bottom;
+}
+
+
+/* =================================
+   MENSAGEM DO JOGO
+================================= */
+
+.mensagem-jogo {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    border: 2px solid #2455a4;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.78);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 20;
+}
+
+.quiz-integracao {
+    display: none;
 }
