@@ -204,7 +204,15 @@ if ($acao !== "") {
             redirecionar();
 
         case "menu":
+            // Voltar ao menu encerra a partida e apaga todo o progresso.
             $_SESSION["tela"] = "menu";
+            $_SESSION["nivel"] = 1;
+            $_SESSION["pokemon"] = "charmander";
+            $_SESSION["pergunta_atual"] = null;
+            $_SESSION["ultima_pergunta"] = -1;
+            $_SESSION["mensagem"] = "";
+            $_SESSION["evolucao_de"] = "charmander";
+            $_SESSION["evolucao_para"] = "charmeleon";
             redirecionar();
 
         case "quiz":
@@ -392,6 +400,11 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
             <div class="hud-item">
                 ⏱ <span id="tempo">00:00</span>
             </div>
+
+            <form method="post" class="form-menu-jogo">
+                <input type="hidden" name="acao" value="menu">
+                <button class="botao-menu-jogo" type="submit">MENU</button>
+            </form>
         </div>
 
         <div class="arena">
