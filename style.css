@@ -282,8 +282,9 @@ body {
 
 @keyframes andarCharmanderJogo {
     0% { background-position: 0% 0%; }
-    50% { background-position: 50% 0%; }
-    100% { background-position: 100% 0%; }
+    33.333% { background-position: 50% 0%; }
+    66.666% { background-position: 100% 0%; }
+    100% { background-position: 0% 0%; }
 }
 
 /* =================================
@@ -301,7 +302,7 @@ body {
 
     /* Somente o Charmeleon fica maior. A base continua no chão. */
     position: relative;
-    top: 7px;
+    top: 14px;
     transform: scale(1.35);
     transform-origin: center bottom;
 
@@ -310,8 +311,9 @@ body {
 
 @keyframes andarCharmeleonJogo {
     0% { background-position: 0% 0%; }
-    50% { background-position: 50% 0%; }
-    100% { background-position: 100% 0%; }
+    33.333% { background-position: 50% 0%; }
+    66.666% { background-position: 100% 0%; }
+    100% { background-position: 0% 0%; }
 }
 
 /* =================================
@@ -418,52 +420,181 @@ body {
 .evolucao-caixa {
     width: 700px;
     max-width: 90%;
-    padding: 40px;
+    min-height: 560px;
+    padding: 35px 40px;
     border: 4px solid #2455a4;
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.75);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .evolucao-caixa h1 {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 40px;
     color: #ffd21c;
     text-shadow: 3px 3px 0 #2455a4;
 }
 
 .texto-evolucao {
-    margin-bottom: 30px;
+    margin-top: 5px;
+    margin-bottom: 15px;
     font-size: 24px;
     font-weight: bold;
 }
 
-.pokemon-evolucao {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 35px;
-    margin-bottom: 30px;
+.evolucao-animacao {
+    position: relative;
+    width: 260px;
+    height: 300px;
+    margin: 5px 0 10px;
 }
 
-.pokemon-antigo,
-.pokemon-novo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.evolucao-animacao .sprite-evolucao,
+.bola-evolucao {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 160px;
+    height: 175px;
+    transform: translate(-50%, -50%);
 }
 
-.pokemon-antigo p,
-.pokemon-novo p {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: bold;
+.evolucao-animacao .sprite-evolucao {
+    background-repeat: no-repeat;
+    background-size: 300% 300%;
+    background-position: 0% 0%;
+    image-rendering: pixelated;
 }
 
-.seta-evolucao {
-    font-size: 50px;
-    color: #ffd21c;
-    font-weight: bold;
+.evolucao-animacao .charmander-evolucao {
+    background-image: url("assets/charmander-sheet.png");
+}
+
+.evolucao-animacao .charmeleon-evolucao {
+    background-image: url("assets/charmeleon-sheet.png");
+    transform-origin: center bottom;
+    animation: aparecerCharmeleon 4.2s ease-in-out forwards;
+}
+
+.pokemon-saida {
+    animation: virarBola 4.2s ease-in-out forwards;
+}
+
+.bola-evolucao {
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    background: white;
+    box-shadow:
+        0 0 25px rgba(255, 255, 255, 0.75),
+        inset 0 0 18px rgba(210, 210, 210, 0.55);
+    animation: pulsarBola 4.2s ease-in-out forwards;
+}
+
+.form-continuar-evolucao {
+    opacity: 0;
+    animation: mostrarContinuar 4.2s ease forwards;
+}
+
+@keyframes virarBola {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    38% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+}
+
+@keyframes pulsarBola {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.15);
+    }
+
+    18% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.15);
+    }
+
+    38% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    52% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.58);
+    }
+
+    68% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.28);
+    }
+
+    76% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    86% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+}
+
+@keyframes aparecerCharmeleon {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2);
+    }
+
+    68% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2);
+    }
+
+    82% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.18);
+    }
+
+    92% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.38);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.35);
+    }
+}
+
+@keyframes mostrarContinuar {
+    0% { opacity: 0; }
+    85% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 .sprite-evolucao {
@@ -476,39 +607,41 @@ body {
     image-rendering: pixelated;
 }
 
+.quiz-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.opcao {
+    width: 100%;
+    min-height: 55px;
+    padding: 10px 20px;
+    border: 3px solid #2455a4;
+    border-radius: 12px;
+    background: white;
+    color: #222;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.opcao:hover {
+    transform: scale(1.02);
+    background: #ffd21c;
+    color: #1b3d78;
+}
+
+/* Mantém os sprites da tela de evolução com os arquivos atuais. */
 .charmander-evolucao {
     background-image: url("assets/charmander-sheet.png");
 }
 
 .charmeleon-evolucao {
     background-image: url("assets/charmeleon-sheet.png");
-    position: relative;
-    top: 6px;
     transform: scale(1.25);
     transform-origin: center bottom;
 }
 
-
-/* =================================
-   MENSAGEM DO JOGO
-================================= */
-
-.mensagem-jogo {
-    position: absolute;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    padding: 12px 22px;
-    border: 2px solid #2455a4;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.78);
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    text-align: center;
-    z-index: 20;
-}
-
-.quiz-integracao {
-    display: none;
-}
