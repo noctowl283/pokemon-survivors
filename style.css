@@ -427,7 +427,7 @@ body {
     background-image: url("assets/charmander-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-position: 53% 0%;
     image-rendering: pixelated;
 }
 
@@ -444,16 +444,16 @@ body {
 .charmeleon-jogo.direcao-left { --linha-sprite: 100%; }
 
 .charmander-jogo.direcao-down {
-    background-position: 50% 0%;
+    background-position: 53% 0%;
 }
 
 .charmander-jogo.direcao-up {
-    background-position: 50% 50%;
+    background-position: 53% 50%;
 }
 
 .charmander-jogo.direcao-right,
 .charmander-jogo.direcao-left {
-    background-position: 50% 100%;
+    background-position: 53% 100%;
 }
 
 .charmander-jogo.direcao-right {
@@ -485,7 +485,7 @@ body {
     background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% 0%;
+    background-position: 50% -6%;
     image-rendering: pixelated;
 
     /* Tamanho/altura definidos anteriormente pelo usuário. */
@@ -540,23 +540,23 @@ body {
     height: 100%;
     background-repeat: no-repeat;
     background-size: 350% 300%;
-    background-position: 50% 0%;
+    background-position: 50% 40%;
     image-rendering: pixelated;
     position: relative;
     transform-origin: center bottom;
 }
 
-/* Mega Charizard: 1ª linha = baixo, 2ª = cima, 3ª = direita. */
-.megacharizard-jogo.direcao-down {
+/* Mega Charizard: 1ª linha = lado/direita, 2ª = frente, 3ª = costas. */
+.megacharizard-jogo.direcao-right,
+.megacharizard-jogo.direcao-left {
     background-position: 50% 0%;
 }
 
-.megacharizard-jogo.direcao-up {
-    background-position: 50% 50%;
+.megacharizard-jogo.direcao-down {
+    background-position: 50% 40%;
 }
 
-.megacharizard-jogo.direcao-right,
-.megacharizard-jogo.direcao-left {
+.megacharizard-jogo.direcao-up {
     background-position: 50% 100%;
 }
 
@@ -576,10 +576,11 @@ body {
 .charizard-jogo.direcao-right,
 .charizard-jogo.direcao-left { --linha-sprite: 100%; }
 
-.megacharizard-jogo.direcao-down { --linha-sprite: 0%; }
-.megacharizard-jogo.direcao-up { --linha-sprite: 50%; }
+/* O Mega tem a frente na linha do meio e as costas na última. */
 .megacharizard-jogo.direcao-right,
-.megacharizard-jogo.direcao-left { --linha-sprite: 100%; }
+.megacharizard-jogo.direcao-left { --linha-sprite: 0%; }
+.megacharizard-jogo.direcao-down { --linha-sprite: 40%; }
+.megacharizard-jogo.direcao-up { --linha-sprite: 100%; }
 
 /* Charizard normal. */
 .charizard-jogo {
@@ -602,16 +603,18 @@ body {
     animation: andarPokemonJogo 0.6s steps(1) infinite;
 }
 
-/* Mega Charizard usa os 3 frames normais da folha. */
+/* Mega Charizard usa a ordem invertida da folha:
+   esquerda -> frente -> direita. Como as colunas foram invertidas,
+   a caminhada fica direita -> frente -> esquerda. */
 .megacharizard-jogo.andando {
     animation: andarMegaCharizardJogo 0.6s steps(1) infinite;
 }
 
 @keyframes andarCharmeleonJogo {
-    0% { background-position: 0% var(--linha-sprite); }
-    33.333% { background-position: 50% var(--linha-sprite); }
-    66.666% { background-position: 100% var(--linha-sprite); }
-    100% { background-position: 0% var(--linha-sprite); }
+    0% { background-position: 0% calc(var(--linha-sprite) - 6%); }
+    33.333% { background-position: 50% calc(var(--linha-sprite) - 6%); }
+    66.666% { background-position: 100% calc(var(--linha-sprite) - 6%); }
+    100% { background-position: 0% calc(var(--linha-sprite) - 6%); }
 }
 
 @keyframes andarPokemonJogo {
@@ -622,10 +625,26 @@ body {
 }
 
 @keyframes andarMegaCharizardJogo {
-    0% { background-position: 0% var(--linha-sprite); }
-    33.333% { background-position: 50% var(--linha-sprite); }
-    66.666% { background-position: 100% var(--linha-sprite); }
-    100% { background-position: 0% var(--linha-sprite); }
+    /*
+       Mega Charizard: a 1ª linha é lateral, a 2ª é frente
+       e a 3ª é costas. A esquerda é feita com espelhamento.
+       As colunas continuam na ordem invertida que você ajustou.
+    */
+    0% {
+        background-position: 96% var(--linha-sprite);
+    }
+
+    33.333% {
+        background-position: 50% var(--linha-sprite);
+    }
+
+    66.666% {
+        background-position: 2% var(--linha-sprite);
+    }
+
+    100% {
+        background-position: 96% var(--linha-sprite);
+    }
 }
 
 /* =================================
