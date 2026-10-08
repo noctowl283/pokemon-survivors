@@ -252,6 +252,125 @@ body {
     transform: scale(0.97);
 }
 
+/* =================================
+   MENU DA PARTIDA
+================================= */
+
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 50;
+}
+
+.menu-overlay[hidden] {
+    display: none;
+}
+
+.menu-painel {
+    width: 420px;
+    max-width: 90%;
+    padding: 30px;
+    border: 4px solid #2455a4;
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(45, 45, 45, 0.98),
+            rgba(15, 15, 15, 0.98)
+        );
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.65);
+    text-align: center;
+    color: white;
+}
+
+.menu-painel h2 {
+    margin-bottom: 25px;
+    font-size: 34px;
+    color: #ffd21c;
+    text-shadow: 3px 3px 0 #2455a4;
+}
+
+.controle-volume {
+    margin-bottom: 25px;
+    padding: 18px;
+    border: 2px solid rgba(36, 85, 164, 0.8);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.controle-volume label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.volume-linha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.volume-linha input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+    accent-color: #ffd21c;
+}
+
+#valor-volume {
+    display: block;
+    margin-top: 10px;
+    font-size: 18px;
+    color: #ffd21c;
+}
+
+.menu-painel .botao {
+    margin-top: 10px;
+}
+
+.botao-voltar-menu {
+    background: #f4f4f4;
+}
+
+/* =================================
+   BOTÃO DE TESTE DO QUIZ
+================================= */
+
+.form-teste-quiz {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+}
+
+.botao-teste-quiz {
+    min-width: 130px;
+    height: 40px;
+    padding: 0 14px;
+    border: 2px solid #ffd21c;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffd21c;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.75;
+    transition:
+        transform 0.15s,
+        background 0.15s,
+        opacity 0.15s;
+}
+
+.botao-teste-quiz:hover {
+    transform: scale(1.04);
+    background: rgba(255, 210, 28, 0.15);
+    opacity: 1;
+}
+
 .arena {
     width: 100%;
     height: 100%;
