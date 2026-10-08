@@ -146,8 +146,19 @@ function sortearPergunta(array $perguntas): int
 
 function redirecionar(): void
 {
-    header("Location: index.php");
+    header("Location: index.php?continuar=1");
     exit;
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "GET"
+    && !isset($_GET["acao"])
+    && !isset($_GET["continuar"])) {
+    $_SESSION["tela"] = "menu";
+    $_SESSION["nivel"] = 1;
+    $_SESSION["pokemon"] = "charmander";
+    $_SESSION["pergunta_atual"] = null;
+    $_SESSION["ultima_pergunta"] = -1;
+    $_SESSION["mensagem"] = "";
 }
 
 $acao = "";
