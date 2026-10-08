@@ -140,13 +140,9 @@ body {
     height: 100vh;
 }
 
-#como-jogar,
-#creditos {
-    display: none;
-}
 
 .tela-secundaria {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -194,7 +190,7 @@ body {
 ================================= */
 
 .tela-jogo {
-    display: none;
+    display: block;
     width: 100%;
     height: 100vh;
     position: relative;
@@ -337,7 +333,7 @@ body {
 ========================= */
 
 .tela-quiz {
-    display: none;
+    display: flex;
     width: 100%;
     height: 100vh;
     align-items: center;
@@ -409,7 +405,7 @@ body {
 ======================================== */
 
 .tela-evolucao {
-    display: none;
+    display: flex;
     width: 100%;
     height: 100vh;
     align-items: center;
