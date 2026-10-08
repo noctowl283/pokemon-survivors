@@ -34,6 +34,20 @@ if (telaAtual !== "menu" && musicaAtiva) {
     iniciarMusica();
 }
 
+// Se o navegador bloquear o autoplay depois de uma mudança de tela,
+// o primeiro clique ou tecla do jogador libera a reprodução.
+document.addEventListener("pointerdown", function() {
+    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+        iniciarMusica();
+    }
+});
+
+document.addEventListener("keydown", function() {
+    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+        iniciarMusica();
+    }
+});
+
 // Apertar JOGAR inicia a música e marca a partida como ativa.
 document.querySelectorAll("form").forEach(function(form) {
     const acao = form.querySelector('input[name="acao"]');
