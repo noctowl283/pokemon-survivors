@@ -999,32 +999,6 @@ body {
     image-rendering: pixelated;
 }
 
-.quiz-opcoes {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.opcao {
-    width: 100%;
-    min-height: 55px;
-    padding: 10px 20px;
-    border: 3px solid #2455a4;
-    border-radius: 12px;
-    background: white;
-    color: #222;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.15s;
-}
-
-.opcao:hover {
-    transform: scale(1.02);
-    background: #ffd21c;
-    color: #1b3d78;
-}
 
 /* Mantém os sprites da tela de evolução com os arquivos atuais. */
 .charmander-evolucao {
@@ -1038,10 +1012,3 @@ body {
 }
 
 
-/* Direções laterais: somente a direita é espelhada. */
-.charizard-jogo.direcao-right { transform: scale(1.52); }
-.megacharizard-jogo.direcao-right { transform: scale(1.67); }
-.megacharizard-jogo.direcao-down,
-.megacharizard-jogo.direcao-up { transform: scale(1.67); }
-.charizard-jogo.direcao-down,
-.charizard-jogo.direcao-up { transform: scale(1.52); }
