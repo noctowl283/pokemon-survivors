@@ -109,12 +109,24 @@ $pokemons = [
         "nome" => "CHARMANDER",
         "classe" => "charmander-jogo",
         "sprite" => "charmander-evolucao",
-        "proxima" => "CHARMELEON"
+        "proxima" => "charmeleon"
     ],
     "charmeleon" => [
         "nome" => "CHARMELEON",
         "classe" => "charmeleon-jogo",
         "sprite" => "charmeleon-evolucao",
+        "proxima" => "charizard"
+    ],
+    "charizard" => [
+        "nome" => "CHARIZARD",
+        "classe" => "charizard-jogo",
+        "sprite" => "charizard-evolucao",
+        "proxima" => "megacharizard"
+    ],
+    "megacharizard" => [
+        "nome" => "MEGA CHARIZARD X",
+        "classe" => "megacharizard-jogo",
+        "sprite" => "megacharizard-evolucao",
         "proxima" => null
     ]
 ];
@@ -179,6 +191,8 @@ if ($acao !== "") {
             $_SESSION["pergunta_atual"] = null;
             $_SESSION["ultima_pergunta"] = -1;
             $_SESSION["mensagem"] = "";
+            $_SESSION["evolucao_de"] = "charmander";
+            $_SESSION["evolucao_para"] = "charmeleon";
             redirecionar();
 
         case "como-jogar":
@@ -209,10 +223,29 @@ if ($acao !== "") {
             }
 
             if ($resposta === $perguntasQuiz[$indice]["correta"]) {
-                $_SESSION["nivel"] = 2;
-                $_SESSION["pokemon"] = "charmeleon";
-                $_SESSION["tela"] = "evolucao";
-                $_SESSION["mensagem"] = "";
+                $ordemEvolucao = [
+                    "charmander",
+                    "charmeleon",
+                    "charizard",
+                    "megacharizard"
+                ];
+
+                $pokemonAtual = $_SESSION["pokemon"];
+                $posicaoAtual = array_search($pokemonAtual, $ordemEvolucao, true);
+
+                if ($posicaoAtual !== false && $posicaoAtual < count($ordemEvolucao) - 1) {
+                    $proximoPokemon = $ordemEvolucao[$posicaoAtual + 1];
+
+                    $_SESSION["nivel"] = $posicaoAtual + 2;
+                    $_SESSION["evolucao_de"] = $pokemonAtual;
+                    $_SESSION["evolucao_para"] = $proximoPokemon;
+                    $_SESSION["pokemon"] = $proximoPokemon;
+                    $_SESSION["tela"] = "evolucao";
+                    $_SESSION["mensagem"] = "";
+                } else {
+                    $_SESSION["tela"] = "jogo";
+                    $_SESSION["mensagem"] = "Você já alcançou a forma máxima!";
+                }
             } else {
                 $_SESSION["tela"] = "jogo";
                 $_SESSION["mensagem"] = "Resposta errada! A evolução foi cancelada.";
@@ -233,6 +266,11 @@ $mensagem = $_SESSION["mensagem"] ?? "";
 $_SESSION["mensagem"] = "";
 
 $perguntaAtual = $_SESSION["pergunta_atual"] ?? null;
+
+$evolucaoDeId = $_SESSION["evolucao_de"] ?? "charmander";
+$evolucaoParaId = $_SESSION["evolucao_para"] ?? "charmeleon";
+$evolucaoDe = $pokemons[$evolucaoDeId];
+$evolucaoPara = $pokemons[$evolucaoParaId];
 ?>
 
 <!DOCTYPE html>
@@ -414,15 +452,21 @@ $perguntaAtual = $_SESSION["pergunta_atual"] ?? null;
             <h1>⭐ EVOLUÇÃO! ⭐</h1>
 
             <div class="evolucao-animacao">
-                <div class="sprite-evolucao charmander-evolucao pokemon-saida"></div>
+                <div class="sprite-evolucao <?= htmlspecialchars($evolucaoDe["sprite"]) ?> pokemon-saida"></div>
 
                 <div class="bola-evolucao"></div>
 
-                <div class="sprite-evolucao charmeleon-evolucao pokemon-entrada"></div>
+                <?php if ($evolucaoParaId === "megacharizard"): ?>
+                    <div class="pedra-evolucao"></div>
+                <?php endif; ?>
+
+                <div class="sprite-evolucao <?= htmlspecialchars($evolucaoPara["sprite"]) ?> pokemon-entrada"></div>
             </div>
 
             <p class="texto-evolucao">
-                CHARMANDER → CHARMELEON
+                <?= htmlspecialchars($evolucaoDe["nome"]) ?>
+                →
+                <?= htmlspecialchars($evolucaoPara["nome"]) ?>
             </p>
 
             <form method="post" class="form-continuar-evolucao">
