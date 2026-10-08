@@ -250,18 +250,23 @@ body {
     z-index: 5;
 }
 
-/* Sombra oval no chão, separada do personagem */
+/* Sombra oval no chão, separada do personagem. */
 .jogador::after {
     content: "";
     position: absolute;
-    width: 55px;
-    height: 18px;
+    width: 58px;
+    height: 15px;
     left: 50%;
-    bottom: 2px;
+    bottom: 1px;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.35);
     border-radius: 50%;
-    z-index: -1;
+    z-index: 0;
+}
+
+.jogador > div {
+    position: relative;
+    z-index: 1;
 }
 
 /* =================================
