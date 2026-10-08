@@ -400,27 +400,21 @@ $perguntaAtual = $_SESSION["pergunta_atual"] ?? null;
 
     <main class="tela-evolucao">
         <div class="evolucao-caixa">
-            <h1>⭐ PARABÉNS! ⭐</h1>
+            <h1>⭐ EVOLUÇÃO! ⭐</h1>
 
-            <p class="texto-evolucao">
-                Seu Pokémon evoluiu!
-            </p>
+            <div class="evolucao-animacao">
+                <div class="sprite-evolucao charmander-evolucao pokemon-saida"></div>
 
-            <div class="pokemon-evolucao">
-                <div class="pokemon-antigo">
-                    <div class="sprite-evolucao charmander-evolucao"></div>
-                    <p>CHARMANDER</p>
-                </div>
+                <div class="bola-evolucao"></div>
 
-                <div class="seta-evolucao">→</div>
-
-                <div class="pokemon-novo">
-                    <div class="sprite-evolucao charmeleon-evolucao"></div>
-                    <p>CHARMELEON</p>
-                </div>
+                <div class="sprite-evolucao charmeleon-evolucao pokemon-entrada"></div>
             </div>
 
-            <form method="post">
+            <p class="texto-evolucao">
+                CHARMANDER → CHARMELEON
+            </p>
+
+            <form method="post" class="form-continuar-evolucao">
                 <input type="hidden" name="acao" value="continuar_evolucao">
                 <button class="botao" type="submit">CONTINUAR</button>
             </form>
