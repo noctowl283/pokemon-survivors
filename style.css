@@ -265,6 +265,80 @@ body {
 }
 
 /* =================================
+   PAINEL DE AJUSTE DOS SPRITES
+=================================
+
+   Para corrigir o "balanço" de uma animação, altere somente
+   os valores --frame-1-y / --frame-2-y / --frame-3-y do Pokémon.
+
+   Para corrigir o deslocamento horizontal de cada frame, altere
+   --frame-1-x / --frame-2-x / --frame-3-x.
+
+   Exemplos:
+   --frame-1-y: -2%;  -> sobe o frame 1
+   --frame-2-y:  0%;  -> mantém o frame 2
+   --frame-3-y:  2%;  -> desce o frame 3
+
+   NÃO é preciso mexer nas keyframes abaixo.
+================================= */
+
+/* CHARMANDER */
+.charmander-jogo {
+    --frame-1-x: 0%;
+    --frame-2-x: 50%;
+    --frame-3-x: 100%;
+
+    --frame-1-y: 0%;
+    --frame-2-y: 0%;
+    --frame-3-y: 0%;
+
+    --sprite-idle-x: 53%;
+}
+
+/* CHARMELEON */
+.charmeleon-jogo {
+    --frame-1-x: 0%;
+    --frame-2-x: 50%;
+    --frame-3-x: 100%;
+
+    --frame-1-y: -6%;
+    --frame-2-y: -6%;
+    --frame-3-y: -6%;
+
+    --sprite-idle-x: 50%;
+}
+
+/* CHARIZARD */
+.charizard-jogo {
+    --frame-1-x: 0%;
+    --frame-2-x: 50%;
+    --frame-3-x: 100%;
+
+    --frame-1-y: 0%;
+    --frame-2-y: 0%;
+    --frame-3-y: 0%;
+
+    --sprite-idle-x: 50%;
+}
+
+/* MEGA CHARIZARD */
+.megacharizard-jogo {
+    /*
+       Você inverteu as colunas desta sheet, então preservamos
+       a ordem atual da animação.
+    */
+    --frame-1-x: 96%;
+    --frame-2-x: 50%;
+    --frame-3-x: 2%;
+
+    --frame-1-y: 0%;
+    --frame-2-y: 0%;
+    --frame-3-y: 0%;
+
+    --sprite-idle-x: 50%;
+}
+
+/* =================================
    CHARMANDER DO JOGO
 ================================= */
 
@@ -316,10 +390,18 @@ body {
 }
 
 @keyframes andarCharmanderJogo {
-    0% { background-position: 0% var(--linha-sprite); }
-    33.333% { background-position: 50% var(--linha-sprite); }
-    66.666% { background-position: 100% var(--linha-sprite); }
-    100% { background-position: 0% var(--linha-sprite); }
+    0% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
+    33.333% {
+        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+    }
+    66.666% {
+        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+    }
+    100% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
 }
 
 /* =================================
@@ -332,7 +414,7 @@ body {
     background-image: url("assets/charmeleon-sheet.png");
     background-repeat: no-repeat;
     background-size: 300% 300%;
-    background-position: 50% -6%;
+    background-position: var(--sprite-idle-x) var(--frame-2-y);
     image-rendering: pixelated;
 
     /* Tamanho/altura definidos anteriormente pelo usuário. */
@@ -354,7 +436,7 @@ body {
     height: 100%;
     background-repeat: no-repeat;
     background-size: 350% 300%;
-    background-position: 50% -7%;
+    background-position: var(--sprite-idle-x) -7%;
     image-rendering: pixelated;
     position: relative;
     transform-origin: center bottom;
@@ -387,7 +469,7 @@ body {
     height: 100%;
     background-repeat: no-repeat;
     background-size: 350% 300%;
-    background-position: 50% 40%;
+    background-position: var(--sprite-idle-x) 40%;
     image-rendering: pixelated;
     position: relative;
     transform-origin: center bottom;
@@ -458,39 +540,50 @@ body {
 }
 
 @keyframes andarCharmeleonJogo {
-    0% { background-position: 0% calc(var(--linha-sprite) - 6%); }
-    33.333% { background-position: 50% calc(var(--linha-sprite) - 6%); }
-    66.666% { background-position: 100% calc(var(--linha-sprite) - 6%); }
-    100% { background-position: 0% calc(var(--linha-sprite) - 6%); }
+    0% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
+    33.333% {
+        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+    }
+    66.666% {
+        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+    }
+    100% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
 }
 
 @keyframes andarPokemonJogo {
-    0% { background-position: 0% var(--linha-sprite); }
-    33.333% { background-position: 50% var(--linha-sprite); }
-    66.666% { background-position: 100% var(--linha-sprite); }
-    100% { background-position: 0% var(--linha-sprite); }
+    0% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
+    33.333% {
+        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
+    }
+    66.666% {
+        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
+    }
+    100% {
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
+    }
 }
 
 @keyframes andarMegaCharizardJogo {
-    /*
-       Mega Charizard: a 1ª linha é lateral, a 2ª é frente
-       e a 3ª é costas. A esquerda é feita com espelhamento.
-       As colunas continuam na ordem invertida que você ajustou.
-    */
     0% {
-        background-position: 96% var(--linha-sprite);
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
     }
 
     33.333% {
-        background-position: 50% var(--linha-sprite);
+        background-position: var(--frame-2-x) calc(var(--linha-sprite) + var(--frame-2-y));
     }
 
     66.666% {
-        background-position: 2% var(--linha-sprite);
+        background-position: var(--frame-3-x) calc(var(--linha-sprite) + var(--frame-3-y));
     }
 
     100% {
-        background-position: 96% var(--linha-sprite);
+        background-position: var(--frame-1-x) calc(var(--linha-sprite) + var(--frame-1-y));
     }
 }
 
