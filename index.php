@@ -150,8 +150,15 @@ function redirecionar(): void
     exit;
 }
 
+$acao = "";
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $acao = $_POST["acao"] ?? "";
+} elseif (isset($_GET["acao"])) {
+    $acao = $_GET["acao"];
+}
+
+if ($acao !== "") {
 
     switch ($acao) {
         case "jogar":
