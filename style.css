@@ -262,95 +262,125 @@ body {
 .jogador > div {
     position: relative;
     z-index: 1;
+}
 
-    /* Posição do sprite parado. A animação substitui este valor
-       pelos offsets do frame atual enquanto estiver andando. */
-    translate: var(--parado-x, 0px) var(--parado-y, 0px);
+/* Ajuste individual do sprite parado por direção. */
+.jogador > div.direcao-up {
+    translate: var(--parado-cima-x, 0px) var(--parado-cima-y, 0px);
+}
+
+.jogador > div.direcao-down {
+    translate: var(--parado-baixo-x, 0px) var(--parado-baixo-y, 0px);
+}
+
+.jogador > div.direcao-left {
+    translate: var(--parado-esquerda-x, 0px) var(--parado-esquerda-y, 0px);
+}
+
+.jogador > div.direcao-right {
+    translate: var(--parado-direita-x, 0px) var(--parado-direita-y, 0px);
 }
 
 /* =================================
    PAINEL DE AJUSTE DOS SPRITES
 =================================
 
-   Aqui você ajusta a posição VISUAL de cada sprite.
+   ESTES VALORES SÓ MEXEM NA POSIÇÃO VISUAL.
 
-   Use PX, não background-position:
-
-   --parado-x / --parado-y
-       Move o Pokémon quando está parado.
-
-   --frame-1-x / --frame-1-y
-   --frame-2-x / --frame-2-y
-   --frame-3-x / --frame-3-y
-       Move cada um dos 3 frames da caminhada.
+   Pokémon parado:
+       --parado-cima-x / --parado-cima-y
+       --parado-baixo-x / --parado-baixo-y
+       --parado-esquerda-x / --parado-esquerda-y
+       --parado-direita-x / --parado-direita-y
 
    Exemplo:
-       --parado-x: -4px;
-       -> sprite parado 4px para a esquerda.
+       --parado-cima-x: -3px;
+       -> parado olhando para cima fica 3px para a esquerda.
 
-       --frame-2-y: 3px;
-       -> o frame 2 da caminhada fica 3px mais para baixo.
+       --parado-baixo-y: 2px;
+       -> parado olhando para baixo fica 2px para baixo.
 
-   Os valores de background-position abaixo continuam responsáveis
-   apenas por escolher a coluna/linha da sheet.
+   Os valores de frame continuam separados:
+       --frame-1-x / --frame-1-y
+       --frame-2-x / --frame-2-y
+       --frame-3-x / --frame-3-y
+
+   Assim você consegue ajustar o sprite parado de cada direção
+   sem mexer nas outras direções.
 ================================= */
 
 /* CHARMANDER */
 .charmander-jogo {
-    --parado-x: 0px;
-    --parado-y: 0px;
+    --parado-cima-x: 0px;
+    --parado-cima-y: 0px;
+    --parado-baixo-x: 0px;
+    --parado-baixo-y: 0px;
+    --parado-esquerda-x: 0px;
+    --parado-esquerda-y: 0px;
+    --parado-direita-x: 0px;
+    --parado-direita-y: 0px;
 
     --frame-1-x: 0px;
     --frame-1-y: 0px;
-
     --frame-2-x: 0px;
     --frame-2-y: 0px;
-
     --frame-3-x: 0px;
     --frame-3-y: 0px;
 }
 
 /* CHARMELEON */
 .charmeleon-jogo {
-    --parado-x: 0px;
-    --parado-y: 0px;
+    --parado-cima-x: 0px;
+    --parado-cima-y: 0px;
+    --parado-baixo-x: 0px;
+    --parado-baixo-y: 0px;
+    --parado-esquerda-x: 0px;
+    --parado-esquerda-y: 0px;
+    --parado-direita-x: 0px;
+    --parado-direita-y: 0px;
 
     --frame-1-x: 0px;
     --frame-1-y: 0px;
-
     --frame-2-x: 0px;
     --frame-2-y: 0px;
-
     --frame-3-x: 0px;
     --frame-3-y: 0px;
 }
 
 /* CHARIZARD */
 .charizard-jogo {
-    --parado-x: 0px;
-    --parado-y: 0px;
+    --parado-cima-x: 0px;
+    --parado-cima-y: 0px;
+    --parado-baixo-x: 0px;
+    --parado-baixo-y: 0px;
+    --parado-esquerda-x: 0px;
+    --parado-esquerda-y: 0px;
+    --parado-direita-x: 0px;
+    --parado-direita-y: 0px;
 
     --frame-1-x: 0px;
     --frame-1-y: 0px;
-
     --frame-2-x: 0px;
     --frame-2-y: 0px;
-
     --frame-3-x: 0px;
     --frame-3-y: 0px;
 }
 
 /* MEGA CHARIZARD */
 .megacharizard-jogo {
-    --parado-x: 0px;
-    --parado-y: 0px;
+    --parado-cima-x: 0px;
+    --parado-cima-y: 0px;
+    --parado-baixo-x: 0px;
+    --parado-baixo-y: 0px;
+    --parado-esquerda-x: 0px;
+    --parado-esquerda-y: 0px;
+    --parado-direita-x: 0px;
+    --parado-direita-y: 0px;
 
     --frame-1-x: 0px;
     --frame-1-y: 0px;
-
     --frame-2-x: 0px;
     --frame-2-y: 0px;
-
     --frame-3-x: 0px;
     --frame-3-y: 0px;
 }
@@ -451,11 +481,9 @@ body {
 
 .charmeleon-jogo.direcao-left {
     transform: scale(1.39);
-    translate: var(--parado-x) var(--parado-y);
 }
 
 .charmeleon-jogo.direcao-right {
-    translate: var(--parado-x) var(--parado-y);
 }
 
 .charizard-jogo{
@@ -490,12 +518,10 @@ body {
 
 .charizard-jogo.direcao-left {
     transform: scale(1.52);
-    translate: var(--parado-x) var(--parado-y);
 }
 
 .charizard-jogo.direcao-right,
 .charizard-jogo.direcao-up {
-    translate: var(--parado-x) var(--parado-y);
 }
 
 .megacharizard-jogo {
@@ -530,12 +556,10 @@ body {
 
 .megacharizard-jogo.direcao-left {
     transform: scale(1.67);
-    translate: var(--parado-x) var(--parado-y);
 }
 
 .megacharizard-jogo.direcao-right,
 .megacharizard-jogo.direcao-up {
-    translate: var(--parado-x) var(--parado-y);
 }
 
 /* Linhas usadas pelas animações das sheets. */
