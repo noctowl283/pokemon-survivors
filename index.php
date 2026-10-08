@@ -291,7 +291,10 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body data-nivel="<?= (int) $_SESSION["nivel"] ?>">
+<body
+    data-nivel="<?= (int) $_SESSION["nivel"] ?>"
+    data-tela="<?= htmlspecialchars($tela, ENT_QUOTES, "UTF-8") ?>"
+>
 
 <?php if ($tela === "menu"): ?>
 
