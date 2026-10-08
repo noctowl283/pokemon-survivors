@@ -5,12 +5,38 @@
 const teclas = {};
 
 document.addEventListener("keydown", function(event) {
-    teclas[event.key.toLowerCase()] = true;
+    const tecla = event.key.toLowerCase();
+
+    if (["w", "a", "s", "d"].includes(tecla)) {
+        teclas[tecla] = true;
+        atualizarAnimacaoJogador();
+    }
 });
 
 document.addEventListener("keyup", function(event) {
-    teclas[event.key.toLowerCase()] = false;
+    const tecla = event.key.toLowerCase();
+
+    if (["w", "a", "s", "d"].includes(tecla)) {
+        teclas[tecla] = false;
+        atualizarAnimacaoJogador();
+    }
 });
+
+function atualizarAnimacaoJogador() {
+    const sprite = document.querySelector(".jogador > div");
+
+    if (!sprite) {
+        return;
+    }
+
+    const andando =
+        teclas["w"] ||
+        teclas["a"] ||
+        teclas["s"] ||
+        teclas["d"];
+
+    sprite.classList.toggle("andando", andando);
+}
 
 function moverPlayer() {
     if (typeof player === "undefined" || !player.podeMover) {
