@@ -326,13 +326,6 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
         </div>
 
         <p class="versao">Versão 1.0</p>
-
-        <form method="post" class="form-teste-quiz">
-            <input type="hidden" name="acao" value="quiz">
-            <button class="botao-teste-quiz" type="submit">
-                TESTAR QUIZ
-            </button>
-        </form>
     </main>
 
 <?php elseif ($tela === "como-jogar"): ?>
@@ -467,6 +460,14 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
                 <?= htmlspecialchars($mensagem) ?>
             </div>
         <?php endif; ?>
+
+        <!-- Botão de teste para abrir o quiz manualmente durante o jogo. -->
+        <form method="post" class="form-teste-quiz">
+            <input type="hidden" name="acao" value="quiz">
+            <button class="botao-teste-quiz" type="submit">
+                TESTAR QUIZ
+            </button>
+        </form>
 
         <!-- Ponte para o código de gameplay da Pessoa 1. -->
         <form method="post" id="form-quiz" class="quiz-integracao">
