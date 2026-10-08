@@ -9,20 +9,26 @@ const musicaJogo = new Audio(
     "assets/" + encodeURIComponent(nomeMusica)
 );
 
-const volumeSalvo = localStorage.getItem("pokemonSurvivorsVolume");
-const volumeInicial = volumeSalvo !== null ? Number(volumeSalvo) : 0.45;
+const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
+const volumeInicial = Number.isFinite(volumeSalvo)
+    ? Math.min(1, Math.max(0, volumeSalvo))
+    : 0.45;
 
 musicaJogo.loop = true;
-musicaJogo.volume = Math.min(1, Math.max(0, volumeInicial));
+musicaJogo.volume = volumeInicial;
 musicaJogo.preload = "auto";
 
 const telaAtual = document.body.dataset.tela;
 const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
+const telasComMusica = new Set(["jogo", "quiz", "evolucao"]);
 
 function iniciarMusica() {
+    if (!musicaJogo.paused) {
+        return;
+    }
+
     musicaJogo.play().catch(function() {
         // O navegador pode bloquear a reprodução automática.
-        // O próximo clique/tecla do usuário poderá liberar a música.
     });
 }
 
@@ -33,7 +39,7 @@ function pararMusica() {
 
 // Ao entrar em qualquer tela durante a partida,
 // tenta continuar a música em loop.
-if (telaAtual !== "menu" && musicaAtiva) {
+if (telasComMusica.has(telaAtual) && musicaAtiva) {
     iniciarMusica();
 }
 
@@ -62,11 +68,13 @@ document.querySelectorAll("form").forEach(function(form) {
     form.addEventListener("submit", function() {
         if (acao.value === "jogar") {
             sessionStorage.setItem("pokemonSurvivorsMusica", "on");
+            sessionStorage.setItem("pokemonSurvivorsInicio", String(Date.now()));
             iniciarMusica();
         }
 
         if (acao.value === "menu") {
             sessionStorage.removeItem("pokemonSurvivorsMusica");
+            sessionStorage.removeItem("pokemonSurvivorsInicio");
             pararMusica();
         }
     });
@@ -76,6 +84,7 @@ document.querySelectorAll("form").forEach(function(form) {
 // uma marcação antiga de partida com música ativa.
 if (telaAtual === "menu") {
     sessionStorage.removeItem("pokemonSurvivorsMusica");
+    sessionStorage.removeItem("pokemonSurvivorsInicio");
     pararMusica();
 }
 
@@ -155,11 +164,13 @@ document.addEventListener("keydown", function(event) {
 // ========================================
 
 const teclas = {};
+const spriteJogador = document.querySelector(".jogador > div");
+const teclasMovimento = new Set(["w", "a", "s", "d"]);
 
 document.addEventListener("keydown", function(event) {
     const tecla = event.key.toLowerCase();
 
-    if (["w", "a", "s", "d"].includes(tecla)) {
+    if (teclasMovimento.has(tecla)) {
         teclas[tecla] = true;
 
         const direcoes = {
@@ -184,26 +195,30 @@ document.addEventListener("keyup", function(event) {
 });
 
 function atualizarDirecaoSprite(direcao) {
-    const sprite = document.querySelector(".jogador > div");
-
-    if (!sprite || !direcao) {
+    if (!spriteJogador || !direcao) {
         return;
     }
 
-    sprite.classList.remove(
+    const direcaoAtual = spriteJogador.dataset.direcao;
+
+    if (direcaoAtual === direcao) {
+        return;
+    }
+
+    spriteJogador.dataset.direcao = direcao;
+
+    spriteJogador.classList.remove(
         "direcao-up",
         "direcao-down",
         "direcao-left",
         "direcao-right"
     );
 
-    sprite.classList.add("direcao-" + direcao);
+    spriteJogador.classList.add("direcao-" + direcao);
 }
 
 function atualizarAnimacaoJogador() {
-    const sprite = document.querySelector(".jogador > div");
-
-    if (!sprite) {
+    if (!spriteJogador) {
         return;
     }
 
@@ -213,7 +228,7 @@ function atualizarAnimacaoJogador() {
         teclas["s"] ||
         teclas["d"];
 
-    sprite.classList.toggle("andando", andando);
+    spriteJogador.classList.toggle("andando", andando);
 }
 
 // Começa olhando para baixo, usando o frame central.
@@ -255,7 +270,12 @@ function moverPlayer() {
 const tempo = document.getElementById("tempo");
 
 if (tempo) {
-    const inicio = Date.now();
+    let inicio = Number(sessionStorage.getItem("pokemonSurvivorsInicio"));
+
+    if (!Number.isFinite(inicio) || inicio <= 0) {
+        inicio = Date.now();
+        sessionStorage.setItem("pokemonSurvivorsInicio", String(inicio));
+    }
 
     function atualizarTempo() {
         const segundos = Math.floor((Date.now() - inicio) / 1000);
