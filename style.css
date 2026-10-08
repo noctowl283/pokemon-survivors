@@ -372,25 +372,30 @@ body {
 }
 
 @keyframes andarMegaCharizardJogo {
-    /* Pequena compensação vertical para manter os 3 sprites na mesma altura. */
+    /*
+       A folha do Mega tem 3 colunas e está em ordem invertida.
+       Como o background usa 350%, 50% não corresponde exatamente
+       à segunda coluna. Os valores abaixo deslocam uma coluna por vez,
+       evitando o efeito de "balanço" lateral.
+    */
     0% {
-        background-position: 100% 40%;
-        top: 1px;
+        background-position: 93.333% 40%;
+        top: 0;
     }
 
     33.333% {
-        background-position: 50% 40%;
+        background-position: 46.667% 40%;
         top: 0;
     }
 
     66.666% {
         background-position: 0% 40%;
-        top: 1px;
+        top: 0;
     }
 
     100% {
-        background-position: 100% 40%;
-        top: 1px;
+        background-position: 93.333% 40%;
+        top: 0;
     }
 }
 
