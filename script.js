@@ -480,6 +480,85 @@ function moverPlayer() {
     player.y = Math.min(TAMANHO_MAPA - limite, Math.max(limite, player.y));
 }
 
+const expValorElement = document.getElementById("exp-valor");
+const expPreenchimentoElement = document.getElementById("exp-preenchimento");
+const EXP_POR_NIVEL = 100;
+const EXP_POR_ORBE = 20;
+let experienciaAtual = gameplayAtivo
+    ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, Number(sessionStorage.getItem("pokemonSurvivorsExp") || 0)))
+    : 0;
+let quizDeNivelIniciado = false;
+
+function atualizarBarraExp() {
+    if (expValorElement) {
+        expValorElement.textContent = String(experienciaAtual);
+    }
+
+    if (expPreenchimentoElement) {
+        expPreenchimentoElement.style.width =
+            (experienciaAtual / EXP_POR_NIVEL * 100) + "%";
+    }
+}
+
+function criarOrbeExp(x, y) {
+    if (!world) {
+        return;
+    }
+
+    const orbe = document.createElement("div");
+    orbe.className = "exp-orb";
+    orbe.setAttribute("aria-label", "Experiência");
+    orbe.style.left = (x - 9) + "px";
+    orbe.style.top = (y - 9) + "px";
+    world.appendChild(orbe);
+}
+
+function iniciarQuizPorNivel() {
+    if (quizDeNivelIniciado) {
+        return;
+    }
+
+    quizDeNivelIniciado = true;
+    player.podeMover = false;
+    experienciaAtual = 0;
+    sessionStorage.setItem("pokemonSurvivorsExp", "0");
+    sessionStorage.setItem(
+        "pokemonSurvivorsPosicao",
+        JSON.stringify({ x: player.x, y: player.y })
+    );
+    atualizarBarraExp();
+
+    // O PHP sorteia a pergunta e cuida da resposta/evolução.
+    window.location.href = "index.php?acao=quiz";
+}
+
+function recolherOrbesExp() {
+    if (!gameplayAtivo || quizDeNivelIniciado || !world) {
+        return;
+    }
+
+    const orbes = world.querySelectorAll(".exp-orb");
+
+    for (const orbe of orbes) {
+        const x = Number.parseFloat(orbe.style.left) + 9;
+        const y = Number.parseFloat(orbe.style.top) + 9;
+        const dx = player.x - x;
+        const dy = player.y - y;
+
+        if (Math.sqrt(dx * dx + dy * dy) <= 50) {
+            orbe.remove();
+            experienciaAtual = Math.min(EXP_POR_NIVEL, experienciaAtual + EXP_POR_ORBE);
+            sessionStorage.setItem("pokemonSurvivorsExp", String(experienciaAtual));
+            atualizarBarraExp();
+
+            if (experienciaAtual >= EXP_POR_NIVEL) {
+                iniciarQuizPorNivel();
+                return;
+            }
+        }
+    }
+}
+
 function atualizarPlayer() {
     if (!playerElement) {
         return;
@@ -539,6 +618,7 @@ function criarFireBall() {
                 y < monstroY + 70 &&
                 y + 45 > monstroY
             ) {
+                criarOrbeExp(monstroX + 26, monstroY + 26);
                 monstro.remove();
                 fireball.remove();
                 return;
@@ -752,12 +832,14 @@ document.querySelectorAll("form").forEach(function(form) {
         if (acao.value === "jogar") {
             sessionStorage.removeItem("pokemonSurvivorsPosicao");
             sessionStorage.setItem("pokemonSurvivorsVidas", "5");
+            sessionStorage.setItem("pokemonSurvivorsExp", "0");
             sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
         }
 
         if (acao.value === "menu") {
             sessionStorage.removeItem("pokemonSurvivorsPosicao");
             sessionStorage.removeItem("pokemonSurvivorsVidas");
+            sessionStorage.removeItem("pokemonSurvivorsExp");
             sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
         }
     });
@@ -766,16 +848,20 @@ document.querySelectorAll("form").forEach(function(form) {
 if (telaAtual === "menu") {
     sessionStorage.removeItem("pokemonSurvivorsPosicao");
     sessionStorage.removeItem("pokemonSurvivorsVidas");
+    sessionStorage.removeItem("pokemonSurvivorsExp");
     sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
 }
 
 if (gameplayAtivo) {
     atualizarVida();
+    atualizarBarraExp();
+    atualizarSpriteJogador();
     iniciarPlayer();
     iniciarIntro();
 
     function gameLoop(momento) {
         moverPlayer();
+        recolherOrbesExp();
         atualizarFrameCaminhada(momento || performance.now());
         atualizarPlayer();
         atualizarCamera();
