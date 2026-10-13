@@ -542,17 +542,19 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
 
     <main class="tela-jogo">
         <div class="hud">
-            <div class="hud-item">
-                ❤️ HP: <span id="hp">5</span>/5
+            <div class="vidas-hud" aria-label="Vidas restantes">
+                <div id="heart" role="img" aria-label="5 vidas restantes"></div>
             </div>
 
-            <div class="hud-item">
-                ⭐ NÍVEL: <span id="nivel"><?= (int) $_SESSION["nivel"] ?></span>
+            <div class="hud-item nivel-hud" aria-label="Nível atual">
+                <span class="hud-icone" aria-hidden="true">★</span>
+                <span class="nivel-legenda">NÍV.</span>
+                <strong id="nivel"><?= (int) $_SESSION["nivel"] ?></strong>
             </div>
 
             <div class="exp-hud" aria-label="Barra de experiência">
                 <div class="exp-legenda">
-                    <span>🔵 EXP</span>
+                    <span>EXP</span>
                     <span>
                         <?php if (($_SESSION["pokemon"] ?? "") === "megacharizardy"): ?>
                             <strong id="exp-valor">MAX</strong>
@@ -566,13 +568,18 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                 </div>
             </div>
 
-            <div class="hud-item">
-                ⏱ <span id="tempo">00:00</span>
+            <div class="hud-item tempo-hud">
+                <span class="hud-icone" aria-hidden="true">◷</span>
+                <span id="tempo">05:00</span>
             </div>
 
-            <button class="botao-menu-jogo" id="abrir-menu-jogo" type="button">
-                MENU
-            </button>
+            <button
+                class="botao-menu-jogo"
+                id="abrir-menu-jogo"
+                type="button"
+                aria-label="Pausar partida"
+                title="Pausar partida"
+            >Ⅱ</button>
         </div>
 
         <div class="menu-overlay" id="menu-overlay" hidden>
@@ -648,8 +655,6 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
             </div>
         </div>
 
-        <div id="heart" aria-label="Vidas restantes"></div>
-
         <div id="pokemon-intro" aria-hidden="true">
             <div id="pokebola"></div>
             <div id="charmander-intro"></div>
@@ -660,14 +665,6 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                 <?= htmlspecialchars($mensagem) ?>
             </div>
         <?php endif; ?>
-
-        <!-- Botão de teste para abrir o quiz manualmente durante o jogo. -->
-        <form method="post" class="form-teste-quiz">
-            <input type="hidden" name="acao" value="quiz">
-            <button class="botao-teste-quiz" type="submit">
-                TESTAR QUIZ
-            </button>
-        </form>
 
         <!-- Ponte para o código de gameplay da Pessoa 1. -->
         <form method="post" id="form-quiz" class="quiz-integracao">
