@@ -27,7 +27,6 @@ musicaJogo.preload = "auto";
 
 const telaAtual = document.body.dataset.tela;
 const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
-const telasComMusica = new Set(["jogo", "quiz", "evolucao", "falha_evolucao"]);
 
 function iniciarMusica() {
     // A música já é a mesma instância entre as telas; não reinicia se toca.
@@ -46,8 +45,8 @@ function pararMusica() {
     sessionStorage.removeItem("pokemonSurvivorsPosicaoMusica");
 }
 
-// No jogo, quiz e evoluções, apenas garante que a música esteja tocando.
-if (telasComMusica.has(telaAtual) && musicaAtiva) {
+// A música pode continuar em qualquer tela; nunca é recriada na navegação do iframe.
+if (musicaAtiva) {
     iniciarMusica();
 }
 
@@ -80,23 +79,13 @@ document.querySelectorAll("form").forEach(function(form) {
         }
 
         if (acao.value === "menu") {
-            sessionStorage.removeItem("pokemonSurvivorsMusica");
+            // Voltar ao menu encerra a partida, mas a música segue tocando.
             sessionStorage.removeItem("pokemonSurvivorsInicio");
-            pararMusica();
         }
     });
 });
 
-if (telaAtual === "menu") {
-    sessionStorage.removeItem("pokemonSurvivorsMusica");
-    sessionStorage.removeItem("pokemonSurvivorsInicio");
-    pararMusica();
-}
-
-if (telaAtual === "gameover") {
-    sessionStorage.removeItem("pokemonSurvivorsMusica");
-    pararMusica();
-}
+// Menu e Game Over não encerram o áudio: a página principal o mantém vivo.
 
 
 
@@ -557,7 +546,7 @@ function iniciarQuizPorNivel() {
     atualizarBarraExp();
 
     // O PHP sorteia a pergunta e cuida da resposta/evolução.
-    window.location.href = "index.php?acao=quiz";
+    window.location.href = "game.php?acao=quiz";
 }
 
 function recolherOrbesExp() {
@@ -856,12 +845,10 @@ function finalizarPartida(motivo) {
 
     gameOverIniciado = true;
     player.podeMover = false;
-    sessionStorage.removeItem("pokemonSurvivorsMusica");
     sessionStorage.removeItem("pokemonSurvivorsInicio");
-    pararMusica();
 
     window.location.href =
-        "index.php?acao=gameover&motivo=" + encodeURIComponent(motivo);
+        "game.php?acao=gameover&motivo=" + encodeURIComponent(motivo);
 }
 
 function atualizarCronometroPartida() {
@@ -988,6 +975,6 @@ setInterval(function() {
 
     if (nivelDoGameplay > ultimoNivel) {
         ultimoNivel = nivelDoGameplay;
-        window.location.href = "index.php?acao=quiz";
+        window.location.href = "game.php?acao=quiz";
     }
 }, 200);
