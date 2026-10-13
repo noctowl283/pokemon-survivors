@@ -20,7 +20,7 @@ musicaJogo.preload = "auto";
 
 const telaAtual = document.body.dataset.tela;
 const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
-const telasComMusica = new Set(["jogo", "quiz", "evolucao"]);
+const telasComMusica = new Set(["jogo", "quiz", "evolucao", "falha_evolucao"]);
 
 function iniciarMusica() {
     if (!musicaJogo.paused) {
@@ -484,8 +484,9 @@ const expValorElement = document.getElementById("exp-valor");
 const expPreenchimentoElement = document.getElementById("exp-preenchimento");
 const EXP_POR_NIVEL = 100;
 const EXP_POR_ORBE = 20;
-let experienciaAtual = gameplayAtivo
-    ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, Number(sessionStorage.getItem("pokemonSurvivorsExp") || 0)))
+const experienciaSalva = Number(sessionStorage.getItem("pokemonSurvivorsExp") || 0);
+let experienciaAtual = gameplayAtivo && Number.isFinite(experienciaSalva)
+    ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, experienciaSalva))
     : 0;
 let quizDeNivelIniciado = false;
 
