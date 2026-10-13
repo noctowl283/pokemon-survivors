@@ -357,7 +357,10 @@ const intervaloAtaquePorPokemon = {
 
 function atualizarVida() {
     if (heartElement) {
-        heartElement.style.width = (coracoes * 35) + "px";
+        const tamanhoCoracao = Number.parseFloat(
+            getComputedStyle(heartElement).getPropertyValue("--heart-size")
+        ) || 28;
+        heartElement.style.width = (coracoes * tamanhoCoracao) + "px";
         heartElement.setAttribute("aria-label", coracoes + " vidas restantes");
     }
 
