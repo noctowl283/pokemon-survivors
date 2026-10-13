@@ -162,6 +162,81 @@ document.addEventListener("keydown", function(event) {
 // ========================================
 // ========================================
 // GAMEPLAY — MOVIMENTO, MAPA E COMBATE
+// Arquivos separados: 3 frames por direção.
+const spriteFrameAtual = { valor: 1 };
+let ultimoSpriteAplicado = "";
+let ultimoMomentoFrame = 0;
+
+function caminhoSpriteAtual() {
+    const pokemon = document.body.dataset.pokemon || player.pokemon || "charmander";
+    const direcaoArquivo = {
+        down: "baixo",
+        up: "cima",
+        left: "lado",
+        right: "lado"
+    }[player.direcao] || "baixo";
+
+    const frame = spriteFrameAtual.valor;
+    let arquivo = "";
+
+    if (pokemon === "charmander") {
+        arquivo = "charmander-" + direcaoArquivo + frame + "-sheet.png";
+        return "assets/charmander/" + arquivo;
+    }
+
+    if (pokemon === "charmeleon") {
+        // O terceiro frame de cima está nomeado como cima3 no arquivo enviado.
+        const frameArquivo = direcaoArquivo === "cima" && frame === 2 ? 3 : frame;
+        arquivo = "charmeleon_" + direcaoArquivo + frameArquivo + "_sheet.png";
+        return "assets/charmeleon/" + arquivo;
+    }
+
+    if (pokemon === "charizard") {
+        arquivo = "charizard_" + direcaoArquivo + frame + "_sheets.png";
+        return "assets/charizard/" + arquivo;
+    }
+
+    if (pokemon === "megacharizard") {
+        arquivo = "megacharizard_" + direcaoArquivo + frame + "_sheets.png";
+        return "assets/megacharizard/" + arquivo;
+    }
+
+    return "assets/charmander/charmander-baixo1-sheet.png";
+}
+
+function atualizarSpriteJogador() {
+    if (!playerElement) {
+        return;
+    }
+
+    const caminho = caminhoSpriteAtual();
+
+    // Evita reatribuir a mesma imagem a cada frame do jogo.
+    if (caminho !== ultimoSpriteAplicado) {
+        playerElement.style.backgroundImage = 'url("' + caminho + '")';
+        ultimoSpriteAplicado = caminho;
+    }
+}
+
+function atualizarFrameCaminhada(momento) {
+    const andando = Array.from(teclasMovimento).some(function(tecla) {
+        return teclas[tecla];
+    });
+
+    if (andando) {
+        if (momento - ultimoMomentoFrame >= 140) {
+            spriteFrameAtual.valor = (spriteFrameAtual.valor + 1) % 3;
+            ultimoMomentoFrame = momento;
+        }
+    } else {
+        // Usa o frame central quando o personagem está parado.
+        spriteFrameAtual.valor = 1;
+    }
+
+    atualizarSpriteJogador();
+}
+
+
 // Configuração, mapa, quiz e evolução ficam no PHP.
 // As ações em tempo real continuam no navegador.
 // ========================================
@@ -699,8 +774,9 @@ if (gameplayAtivo) {
     iniciarPlayer();
     iniciarIntro();
 
-    function gameLoop() {
+    function gameLoop(momento) {
         moverPlayer();
+        atualizarFrameCaminhada(momento || performance.now());
         atualizarPlayer();
         atualizarCamera();
 
