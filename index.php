@@ -150,6 +150,73 @@ if (!isset($_SESSION["pokemon"])) {
     $_SESSION["pokemon"] = "charmander";
 }
 
+
+function gerarObjetosMapa(): array
+{
+    $objetos = [];
+    $configuracoes = [
+        ["tipo" => "tree", "quantidade" => 70, "largura" => 50, "altura" => 55, "deslocamento_x" => 15, "deslocamento_y" => 20, "largura_colisao" => 50, "altura_colisao" => 55],
+        ["tipo" => "rock", "quantidade" => 90, "largura" => 35, "altura" => 35, "deslocamento_x" => 8, "deslocamento_y" => 8, "largura_colisao" => 35, "altura_colisao" => 35]
+    ];
+
+    foreach ($configuracoes as $configuracao) {
+        $criados = 0;
+        $tentativas = 0;
+        $maxTentativas = $configuracao["quantidade"] * 500;
+
+        while ($criados < $configuracao["quantidade"] && $tentativas < $maxTentativas) {
+            $tentativas++;
+            $x = random_int(200, 9800);
+            $y = random_int(200, 9800);
+            $largura = $configuracao["largura"];
+            $altura = $configuracao["altura"];
+
+            // Mantém a área inicial do jogador sem árvores ou pedras.
+            if (
+                $x < 5200 && $x + $largura > 4800
+                && $y < 5200 && $y + $altura > 4800
+            ) {
+                continue;
+            }
+
+            $colisaoX = $x + $configuracao["deslocamento_x"];
+            $colisaoY = $y + $configuracao["deslocamento_y"];
+            $sobreposto = false;
+
+            foreach ($objetos as $existente) {
+                $margem = 40;
+
+                if (
+                    $colisaoX < $existente["colisao_x"] + $existente["largura_colisao"] + $margem
+                    && $colisaoX + $configuracao["largura_colisao"] + $margem > $existente["colisao_x"]
+                    && $colisaoY < $existente["colisao_y"] + $existente["altura_colisao"] + $margem
+                    && $colisaoY + $configuracao["altura_colisao"] + $margem > $existente["colisao_y"]
+                ) {
+                    $sobreposto = true;
+                    break;
+                }
+            }
+
+            if ($sobreposto) {
+                continue;
+            }
+
+            $objetos[] = [
+                "tipo" => $configuracao["tipo"],
+                "x" => $x,
+                "y" => $y,
+                "colisao_x" => $colisaoX,
+                "colisao_y" => $colisaoY,
+                "largura_colisao" => $configuracao["largura_colisao"],
+                "altura_colisao" => $configuracao["altura_colisao"]
+            ];
+            $criados++;
+        }
+    }
+
+    return $objetos;
+}
+
 function sortearPergunta(array $perguntas): int
 {
     $ultima = $_SESSION["ultima_pergunta"] ?? -1;
@@ -171,9 +238,15 @@ function redirecionar(): void
 
 function resetarPartida(): void
 {
-    resetarPartida();
+    $_SESSION["tela"] = "menu";
+    $_SESSION["nivel"] = 1;
+    $_SESSION["pokemon"] = "charmander";
+    $_SESSION["pergunta_atual"] = null;
+    $_SESSION["ultima_pergunta"] = -1;
+    $_SESSION["mensagem"] = "";
     $_SESSION["evolucao_de"] = "charmander";
     $_SESSION["evolucao_para"] = "charmeleon";
+    unset($_SESSION["objetos_mapa"]);
 }
 
 function iniciarPartida(): void
@@ -191,6 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET"
     $_SESSION["pergunta_atual"] = null;
     $_SESSION["ultima_pergunta"] = -1;
     $_SESSION["mensagem"] = "";
+    unset($_SESSION["objetos_mapa"]);
 }
 
 $acao = "";
@@ -278,6 +352,13 @@ $evolucaoDeId = $_SESSION["evolucao_de"] ?? "charmander";
 $evolucaoParaId = $_SESSION["evolucao_para"] ?? "charmeleon";
 $evolucaoDe = $pokemons[$evolucaoDeId];
 $evolucaoPara = $pokemons[$evolucaoParaId];
+
+// O PHP gera e guarda o mapa uma vez por partida para que o cenário
+// continue igual quando o jogador abre o quiz e volta ao jogo.
+if ($tela === "jogo" && !isset($_SESSION["objetos_mapa"])) {
+    $_SESSION["objetos_mapa"] = gerarObjetosMapa();
+}
+$objetosMapa = $_SESSION["objetos_mapa"] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -292,6 +373,7 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
 
 <body
     data-nivel="<?= (int) $_SESSION["nivel"] ?>"
+    data-pokemon="<?= htmlspecialchars($_SESSION["pokemon"], ENT_QUOTES, "UTF-8") ?>"
     data-tela="<?= htmlspecialchars($tela, ENT_QUOTES, "UTF-8") ?>"
 >
 
@@ -392,7 +474,7 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
     <main class="tela-jogo">
         <div class="hud">
             <div class="hud-item">
-                ❤️ HP: <span id="hp">100</span>/100
+                ❤️ HP: <span id="hp">5</span>/5
             </div>
 
             <div class="hud-item">
@@ -444,14 +526,40 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
             </div>
         </div>
 
-        <div class="arena">
-            <div class="jogador" id="jogador">
-                <div class="<?= htmlspecialchars($pokemonAtual["classe"]) ?>"></div>
-            </div>
+        <div id="game" aria-label="Mapa do Pokémon Survivors">
+            <div id="world">
+                <div id="objects">
+                    <?php foreach ($objetosMapa as $objeto): ?>
+                        <div
+                            class="<?= htmlspecialchars($objeto["tipo"], ENT_QUOTES, "UTF-8") ?>"
+                            data-tipo="<?= htmlspecialchars($objeto["tipo"], ENT_QUOTES, "UTF-8") ?>"
+                            data-x="<?= (int) $objeto["colisao_x"] ?>"
+                            data-y="<?= (int) $objeto["colisao_y"] ?>"
+                            data-largura="<?= (int) $objeto["largura_colisao"] ?>"
+                            data-altura="<?= (int) $objeto["altura_colisao"] ?>"
+                            style="left: <?= (int) $objeto["x"] ?>px; top: <?= (int) $objeto["y"] ?>px;"
+                            aria-hidden="true"
+                        ><?= $objeto["tipo"] === "tree" ? "🌲" : "🪨" ?></div>
+                    <?php endforeach; ?>
+                </div>
 
-            <div class="inimigo inimigo-1">👾</div>
-            <div class="inimigo inimigo-2">👾</div>
-            <div class="inimigo inimigo-3">👾</div>
+                <div
+                    id="player"
+                    class="<?= htmlspecialchars($pokemonAtual["classe"], ENT_QUOTES, "UTF-8") ?> direcao-down"
+                    data-direcao="down"
+                    role="img"
+                    aria-label="<?= htmlspecialchars($pokemonAtual["nome"], ENT_QUOTES, "UTF-8") ?>"
+                ></div>
+
+                <div id="monster" aria-hidden="true"></div>
+            </div>
+        </div>
+
+        <div id="heart" aria-label="Vidas restantes"></div>
+
+        <div id="pokemon-intro" aria-hidden="true">
+            <div id="pokebola"></div>
+            <div id="charmander-intro"></div>
         </div>
 
         <?php if ($mensagem !== ""): ?>
