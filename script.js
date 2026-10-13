@@ -258,9 +258,9 @@ const TAMANHO_MAPA = 10000;
 const pokemonDoServidor = document.body.dataset.pokemon || "charmander";
 const tamanhosPokemon = {
     charmander: { largura: 78, altura: 78 },
-    charmeleon: { largura: 92, altura: 92 },
+    charmeleon: { largura: 108, altura: 108 },
     charizard: { largura: 112, altura: 112 },
-    megacharizard: { largura: 132, altura: 132 }
+    megacharizard: { largura: 150, altura: 150 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
