@@ -127,6 +127,12 @@ $pokemons = [
         "nome" => "MEGA CHARIZARD X",
         "classe" => "megacharizard-jogo",
         "sprite" => "megacharizard-evolucao",
+        "proxima" => "megacharizardy"
+    ],
+    "megacharizardy" => [
+        "nome" => "MEGA CHARIZARD Y",
+        "classe" => "megacharizardy-jogo",
+        "sprite" => "megacharizardy-evolucao",
         "proxima" => null
     ]
 ];
@@ -135,7 +141,8 @@ $ordemEvolucao = [
     "charmander",
     "charmeleon",
     "charizard",
-    "megacharizard"
+    "megacharizard",
+    "megacharizardy"
 ];
 
 if (!isset($_SESSION["tela"])) {
@@ -286,11 +293,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $telaServidor = $_SESSION["tela"] ?? "menu";
 if (
     isset($_SESSION["inicio_partida"])
-    && !in_array($telaServidor, ["menu", "gameover"], true)
+    && !in_array($telaServidor, ["menu", "gameover", "vitoria"], true)
     && !in_array($acao, ["jogar", "menu", "gameover"], true)
     && time() - (int) $_SESSION["inicio_partida"] >= 300
 ) {
-    $_SESSION["tela"] = "gameover";
+    if (($_SESSION["pokemon"] ?? "") === "megacharizardy") {
+        $_SESSION["tela"] = "vitoria";
+    } else {
+        $_SESSION["tela"] = "gameover";
+    }
     $_SESSION["motivo_gameover"] = "tempo";
     $_SESSION["mensagem"] = "";
     redirecionar();
@@ -317,9 +328,17 @@ if ($acao !== "") {
             redirecionar();
 
         case "gameover":
-            $_SESSION["tela"] = "gameover";
             $motivoGameover = $_GET["motivo"] ?? $_POST["motivo"] ?? "vida";
-            $_SESSION["motivo_gameover"] = $motivoGameover === "tempo" ? "tempo" : "vida";
+            if (
+                $motivoGameover === "tempo"
+                && ($_SESSION["pokemon"] ?? "") === "megacharizardy"
+            ) {
+                $_SESSION["tela"] = "vitoria";
+                $_SESSION["motivo_gameover"] = "tempo";
+            } else {
+                $_SESSION["tela"] = "gameover";
+                $_SESSION["motivo_gameover"] = $motivoGameover === "tempo" ? "tempo" : "vida";
+            }
             $_SESSION["mensagem"] = "";
             redirecionar();
 
@@ -534,7 +553,13 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
             <div class="exp-hud" aria-label="Barra de experiência">
                 <div class="exp-legenda">
                     <span>🔵 EXP</span>
-                    <span><strong id="exp-valor">0</strong>/<strong id="exp-total"><?= 100 + max(0, ((int) $_SESSION["nivel"]) - 1) * 50 ?></strong></span>
+                    <span>
+                        <?php if (($_SESSION["pokemon"] ?? "") === "megacharizardy"): ?>
+                            <strong id="exp-valor">MAX</strong>
+                        <?php else: ?>
+                            <strong id="exp-valor">0</strong>/<strong id="exp-total"><?= 100 + max(0, ((int) $_SESSION["nivel"]) - 1) * 50 ?></strong>
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <div class="exp-trilho">
                     <div id="exp-preenchimento" class="exp-preenchimento"></div>
@@ -710,6 +735,21 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
         </div>
     </main>
 
+<?php elseif ($tela === "vitoria"): ?>
+
+    <main class="tela-vitoria">
+        <div class="vitoria-caixa">
+            <h1>🏆 VITÓRIA!</h1>
+            <h2>🔥 Mega Charizard Y venceu!</h2>
+            <p>Você sobreviveu aos cinco minutos e alcançou a forma final.</p>
+            <p class="vitoria-destaque">Desafio concluído!</p>
+            <form method="post">
+                <input type="hidden" name="acao" value="menu">
+                <button class="botao" type="submit">VOLTAR AO MENU</button>
+            </form>
+        </div>
+    </main>
+
 <?php elseif ($tela === "falha_evolucao"): ?>
 
     <main class="tela-falha-evolucao">
@@ -750,8 +790,8 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
 
                 <div class="bola-evolucao"></div>
 
-                <?php if ($evolucaoParaId === "megacharizard"): ?>
-                    <div class="pedra-evolucao"></div>
+                <?php if (in_array($evolucaoParaId, ["megacharizard", "megacharizardy"], true)): ?>
+                    <div class="pedra-evolucao <?= $evolucaoParaId === "megacharizardy" ? "pedra-evolucao-y" : "" ?>"></div>
                 <?php endif; ?>
 
                 <div class="sprite-evolucao <?= htmlspecialchars($evolucaoPara["sprite"]) ?> pokemon-entrada"></div>
