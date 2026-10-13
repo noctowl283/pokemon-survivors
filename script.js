@@ -851,12 +851,86 @@ function spawnMonster() {
     novoMonster.removeAttribute("id");
     novoMonster.classList.add("zubat");
 
-    const distanciaSpawn = 1500;
-    let x = player.x + (Math.random() * distanciaSpawn * 2 - distanciaSpawn);
-    let y = player.y + (Math.random() * distanciaSpawn * 2 - distanciaSpawn);
+    // Sorteia um dos lados visíveis e cria o Zubat totalmente fora da tela.
+    const tamanhoMonstro = 70;
+    const margemForaTela = 90;
+    const meiaLarguraTela = window.innerWidth / 2;
+    const meiaAlturaTela = window.innerHeight / 2;
+    const limiteEsquerdoVisivel = player.x - meiaLarguraTela;
+    const limiteDireitoVisivel = player.x + meiaLarguraTela;
+    const limiteSuperiorVisivel = player.y - meiaAlturaTela;
+    const limiteInferiorVisivel = player.y + meiaAlturaTela;
 
-    x = Math.min(TAMANHO_MAPA - 100, Math.max(100, x));
-    y = Math.min(TAMANHO_MAPA - 100, Math.max(100, y));
+    const inicioXVisivel = Math.max(100, limiteEsquerdoVisivel);
+    const fimXVisivel = Math.min(
+        TAMANHO_MAPA - 100 - tamanhoMonstro,
+        limiteDireitoVisivel - tamanhoMonstro
+    );
+    const inicioYVisivel = Math.max(100, limiteSuperiorVisivel);
+    const fimYVisivel = Math.min(
+        TAMANHO_MAPA - 100 - tamanhoMonstro,
+        limiteInferiorVisivel - tamanhoMonstro
+    );
+
+    const ladosPossiveis = [];
+
+    const xEsquerda = limiteEsquerdoVisivel - tamanhoMonstro - margemForaTela;
+    if (xEsquerda >= 100 && inicioYVisivel <= fimYVisivel) {
+        ladosPossiveis.push(function() {
+            return {
+                x: xEsquerda,
+                y: inicioYVisivel + Math.random() * (fimYVisivel - inicioYVisivel)
+            };
+        });
+    }
+
+    const xDireita = limiteDireitoVisivel + margemForaTela;
+    if (
+        xDireita <= TAMANHO_MAPA - 100 - tamanhoMonstro &&
+        inicioYVisivel <= fimYVisivel
+    ) {
+        ladosPossiveis.push(function() {
+            return {
+                x: xDireita,
+                y: inicioYVisivel + Math.random() * (fimYVisivel - inicioYVisivel)
+            };
+        });
+    }
+
+    const yTopo = limiteSuperiorVisivel - tamanhoMonstro - margemForaTela;
+    if (yTopo >= 100 && inicioXVisivel <= fimXVisivel) {
+        ladosPossiveis.push(function() {
+            return {
+                x: inicioXVisivel + Math.random() * (fimXVisivel - inicioXVisivel),
+                y: yTopo
+            };
+        });
+    }
+
+    const yBaixo = limiteInferiorVisivel + margemForaTela;
+    if (
+        yBaixo <= TAMANHO_MAPA - 100 - tamanhoMonstro &&
+        inicioXVisivel <= fimXVisivel
+    ) {
+        ladosPossiveis.push(function() {
+            return {
+                x: inicioXVisivel + Math.random() * (fimXVisivel - inicioXVisivel),
+                y: yBaixo
+            };
+        });
+    }
+
+    // Se estiver perto de uma borda do mapa, usa outro lado possível.
+    // Se nenhum lado puder garantir spawn fora da tela, tenta de novo no próximo ciclo.
+    if (ladosPossiveis.length === 0) {
+        novoMonster.remove();
+        return;
+    }
+
+    const posicaoInicial =
+        ladosPossiveis[Math.floor(Math.random() * ladosPossiveis.length)]();
+    let x = posicaoInicial.x;
+    let y = posicaoInicial.y;
 
     novoMonster.style.left = x + "px";
     novoMonster.style.top = y + "px";
@@ -1085,7 +1159,8 @@ if (gameplayAtivo) {
         setTimeout(agendarSpawnProgressivo, intervalo);
     }
 
-    agendarSpawnProgressivo();
+    // Dá 3 segundos de intervalo no começo antes do primeiro Zubat.
+    setTimeout(agendarSpawnProgressivo, 3000);
     gameLoop();
 }
 
