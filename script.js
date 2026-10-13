@@ -9,6 +9,41 @@ const musicaJogo = new Audio(
     "assets/" + encodeURIComponent(nomeMusica)
 );
 
+// Guarda o ponto da faixa para continuar no mesmo trecho após as telas PHP.
+const CHAVE_POSICAO_MUSICA = "pokemonSurvivorsPosicaoMusica";
+const posicaoMusicaInicial = Number(
+    sessionStorage.getItem(CHAVE_POSICAO_MUSICA) || 0
+);
+
+musicaJogo.addEventListener("loadedmetadata", function() {
+    if (
+        sessionStorage.getItem("pokemonSurvivorsMusica") !== "on" ||
+        !Number.isFinite(posicaoMusicaInicial) ||
+        posicaoMusicaInicial <= 0 ||
+        !Number.isFinite(musicaJogo.duration) ||
+        musicaJogo.duration <= 0
+    ) {
+        return;
+    }
+
+    musicaJogo.currentTime = posicaoMusicaInicial % musicaJogo.duration;
+}, { once: true });
+
+function salvarPosicaoMusica() {
+    if (sessionStorage.getItem("pokemonSurvivorsMusica") !== "on") {
+        return;
+    }
+
+    const tempoAtual = musicaJogo.currentTime;
+
+    if (Number.isFinite(tempoAtual) && tempoAtual > 0) {
+        sessionStorage.setItem(CHAVE_POSICAO_MUSICA, String(tempoAtual));
+    }
+}
+
+musicaJogo.addEventListener("timeupdate", salvarPosicaoMusica);
+window.addEventListener("pagehide", salvarPosicaoMusica);
+
 const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
 const volumeInicial = Number.isFinite(volumeSalvo)
     ? Math.min(1, Math.max(0, volumeSalvo))
@@ -35,6 +70,7 @@ function iniciarMusica() {
 function pararMusica() {
     musicaJogo.pause();
     musicaJogo.currentTime = 0;
+    sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
 }
 
 // Ao entrar em qualquer tela durante a partida,
@@ -66,8 +102,12 @@ document.querySelectorAll("form").forEach(function(form) {
     }
 
     form.addEventListener("submit", function() {
+        salvarPosicaoMusica();
+
         if (acao.value === "jogar") {
             sessionStorage.setItem("pokemonSurvivorsMusica", "on");
+            sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
+            musicaJogo.currentTime = 0;
             sessionStorage.setItem("pokemonSurvivorsInicio", String(Date.now()));
             iniciarMusica();
         }
@@ -169,7 +209,7 @@ document.addEventListener("keydown", function(event) {
 // ========================================
 // GAMEPLAY — MOVIMENTO, MAPA E COMBATE
 // Arquivos separados: 3 frames por direção.
-const spriteFrameAtual = { valor: 1 };
+const spriteFrameAtual = { valor: 0 };
 let ultimoSpriteAplicado = "";
 let ultimoMomentoFrame = 0;
 
@@ -231,12 +271,13 @@ function atualizarFrameCaminhada(momento) {
 
     if (andando) {
         if (momento - ultimoMomentoFrame >= 140) {
-            spriteFrameAtual.valor = (spriteFrameAtual.valor + 1) % 3;
+            // O frame 0 é parado; a caminhada alterna somente entre 1 e 2.
+            spriteFrameAtual.valor = spriteFrameAtual.valor === 1 ? 2 : 1;
             ultimoMomentoFrame = momento;
         }
     } else {
-        // Usa o frame central quando o personagem está parado.
-        spriteFrameAtual.valor = 1;
+        // O frame 0 é a pose parada de todos os Pokémon.
+        spriteFrameAtual.valor = 0;
     }
 
     atualizarSpriteJogador();
