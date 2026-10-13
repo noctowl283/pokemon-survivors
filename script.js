@@ -45,19 +45,30 @@ function pararMusica() {
     sessionStorage.removeItem("pokemonSurvivorsPosicaoMusica");
 }
 
-// A música pode continuar em qualquer tela; nunca é recriada na navegação do iframe.
-if (musicaAtiva) {
+// O menu principal encerra a música; durante o jogo ela continua
+// entre mapa, quiz, evolução e falha, sem reiniciar a faixa.
+if (telaAtual === "menu") {
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    sessionStorage.removeItem("pokemonSurvivorsInicio");
+    pararMusica();
+} else if (musicaAtiva) {
     iniciarMusica();
 }
 
 document.addEventListener("pointerdown", function() {
-    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+    if (
+        document.body.dataset.tela !== "menu" &&
+        sessionStorage.getItem("pokemonSurvivorsMusica") === "on"
+    ) {
         iniciarMusica();
     }
 });
 
 document.addEventListener("keydown", function() {
-    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+    if (
+        document.body.dataset.tela !== "menu" &&
+        sessionStorage.getItem("pokemonSurvivorsMusica") === "on"
+    ) {
         iniciarMusica();
     }
 });
@@ -252,10 +263,11 @@ const TAMANHO_MAPA = 10000;
 
 const pokemonDoServidor = document.body.dataset.pokemon || "charmander";
 const tamanhosPokemon = {
-    charmander: { largura: 78, altura: 78 },
-    charmeleon: { largura: 108, altura: 108 },
-    charizard: { largura: 112, altura: 112 },
-    megacharizard: { largura: 180, altura: 180 }
+    charmander: { largura: 78, altura: 78, hitboxLargura: 50, hitboxAltura: 50 },
+    charmeleon: { largura: 108, altura: 108, hitboxLargura: 60, hitboxAltura: 58 },
+    charizard: { largura: 112, altura: 112, hitboxLargura: 62, hitboxAltura: 60 },
+    // O sprite continua grande, mas a colisão considera só a área central do corpo.
+    megacharizard: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
@@ -266,8 +278,11 @@ const player = {
     vidaMaxima: 5,
     pokemon: pokemonDoServidor,
     direcao: "down",
-    largura: tamanhoPokemonAtual.largura,
-    altura: tamanhoPokemonAtual.altura,
+    // Dimensões visuais posicionam o desenho; largura/altura são a hitbox.
+    larguraVisual: tamanhoPokemonAtual.largura,
+    alturaVisual: tamanhoPokemonAtual.altura,
+    largura: tamanhoPokemonAtual.hitboxLargura || tamanhoPokemonAtual.largura,
+    altura: tamanhoPokemonAtual.hitboxAltura || tamanhoPokemonAtual.altura,
     velocidade: 5,
     nivel: Number(document.body.dataset.nivel || 1),
     podeMover: false
@@ -581,8 +596,8 @@ function atualizarPlayer() {
         return;
     }
 
-    playerElement.style.left = (player.x - player.largura / 2) + "px";
-    playerElement.style.top = (player.y - player.altura / 2) + "px";
+    playerElement.style.left = (player.x - player.larguraVisual / 2) + "px";
+    playerElement.style.top = (player.y - player.alturaVisual / 2) + "px";
 }
 
 function atualizarCamera() {
