@@ -244,6 +244,7 @@ function resetarPartida(): void
     $_SESSION["pergunta_atual"] = null;
     $_SESSION["ultima_pergunta"] = -1;
     $_SESSION["mensagem"] = "";
+    unset($_SESSION["pergunta_falha"], $_SESSION["resposta_correta_falha"]);
     $_SESSION["evolucao_de"] = "charmander";
     $_SESSION["evolucao_para"] = "charmeleon";
     unset($_SESSION["objetos_mapa"]);
@@ -328,11 +329,22 @@ if ($acao !== "") {
                     $_SESSION["mensagem"] = "Você já alcançou a forma máxima!";
                 }
             } else {
-                $_SESSION["tela"] = "jogo";
-                $_SESSION["mensagem"] = "Resposta errada! A evolução foi cancelada.";
+                $letraCorreta = $perguntasQuiz[$indice]["correta"];
+                $indiceCorreto = ord($letraCorreta) - ord("A");
+
+                $_SESSION["pergunta_falha"] = $perguntasQuiz[$indice]["pergunta"];
+                $_SESSION["resposta_correta_falha"] =
+                    $perguntasQuiz[$indice]["opcoes"][$indiceCorreto] ?? $letraCorreta;
+                $_SESSION["tela"] = "falha_evolucao";
+                $_SESSION["mensagem"] = "";
             }
 
             $_SESSION["pergunta_atual"] = null;
+            redirecionar();
+
+        case "continuar_falha":
+            $_SESSION["tela"] = "jogo";
+            unset($_SESSION["pergunta_falha"], $_SESSION["resposta_correta_falha"]);
             redirecionar();
 
         case "continuar_evolucao":
@@ -481,6 +493,16 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                 ⭐ NÍVEL: <span id="nivel"><?= (int) $_SESSION["nivel"] ?></span>
             </div>
 
+            <div class="exp-hud" aria-label="Barra de experiência">
+                <div class="exp-legenda">
+                    <span>🔵 EXP</span>
+                    <span><strong id="exp-valor">0</strong>/100</span>
+                </div>
+                <div class="exp-trilho">
+                    <div id="exp-preenchimento" class="exp-preenchimento"></div>
+                </div>
+            </div>
+
             <div class="hud-item">
                 ⏱ <span id="tempo">00:00</span>
             </div>
@@ -608,6 +630,35 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                     <?php endforeach; ?>
                 </form>
             <?php endif; ?>
+        </div>
+    </main>
+
+<?php elseif ($tela === "falha_evolucao"): ?>
+
+    <main class="tela-falha-evolucao">
+        <div class="falha-caixa">
+            <h1>❌ EVOLUÇÃO FALHOU!</h1>
+            <p class="falha-intro">Você errou a resposta e desta vez a evolução não aconteceu.</p>
+
+            <?php if (!empty($_SESSION["pergunta_falha"])): ?>
+                <p class="falha-pergunta">
+                    <?= htmlspecialchars($_SESSION["pergunta_falha"], ENT_QUOTES, "UTF-8") ?>
+                </p>
+            <?php endif; ?>
+
+            <div class="falha-resposta">
+                <strong>Resposta correta:</strong>
+                <span>
+                    <?= htmlspecialchars($_SESSION["resposta_correta_falha"] ?? "Resposta não disponível", ENT_QUOTES, "UTF-8") ?>
+                </span>
+            </div>
+
+            <p class="falha-dica">Junte experiência e tente novamente no próximo nível.</p>
+
+            <form method="post">
+                <input type="hidden" name="acao" value="continuar_falha">
+                <button class="botao" type="submit">VOLTAR AO JOGO</button>
+            </form>
         </div>
     </main>
 
