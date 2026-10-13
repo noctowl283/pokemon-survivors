@@ -334,6 +334,14 @@ const teclasMovimento = new Set([
 let podeAtacar = true;
 let podeReceberDano = true;
 
+// Intervalo entre disparos em milissegundos: cada evolução atira mais rápido.
+const intervaloAtaquePorPokemon = {
+    charmander: 700,
+    charmeleon: 520,
+    charizard: 380,
+    megacharizard: 250
+};
+
 function atualizarVida() {
     if (heartElement) {
         heartElement.style.width = (coracoes * 35) + "px";
@@ -407,9 +415,12 @@ document.addEventListener("keydown", function(event) {
         criarFireBall();
         podeAtacar = false;
 
+        const intervaloAtaque =
+            intervaloAtaquePorPokemon[player.pokemon] ?? intervaloAtaquePorPokemon.charmander;
+
         setTimeout(function() {
             podeAtacar = true;
-        }, 300);
+        }, intervaloAtaque);
     }
 });
 
