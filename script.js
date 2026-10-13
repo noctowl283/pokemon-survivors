@@ -15,7 +15,8 @@ const musicaJogo = (
     ? window.parent.pokemonSurvivorsMusic
     : new Audio("assets/" + encodeURIComponent(nomeMusica));
 
-const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
+const volumeSalvoBruto = localStorage.getItem("pokemonSurvivorsVolume");
+const volumeSalvo = volumeSalvoBruto === null ? NaN : Number(volumeSalvoBruto);
 const volumeInicial = Number.isFinite(volumeSalvo)
     ? Math.min(1, Math.max(0, volumeSalvo))
     : 0.45;
