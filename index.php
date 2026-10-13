@@ -463,12 +463,15 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
 
         <div class="caixa-informacao">
             <h2>🎮 CONTROLES</h2>
-            <p>Use as teclas <strong>W A S D</strong> para movimentar o Charmander.</p>
+            <p>Use as teclas <strong>W A S D</strong> para movimentar seu Pokémon.</p>
+            <p>Pressione <strong>ESPAÇO</strong> para disparar bolas de fogo.</p>
 
             <br>
 
             <h2>🔥 OBJETIVO</h2>
-            <p>Derrote os Pokémon inimigos e sobreviva o máximo de tempo possível.</p>
+            <p>Derrote Zubats com bolas de fogo. Eles deixam esferas azuis que dão experiência quando recolhidas.</p>
+            <p>A cada nível, a quantidade de EXP necessária aumenta.</p>
+            <p>Sobreviva por até <strong>5 minutos</strong>: perder todas as vidas ou o tempo causa GAME OVER.</p>
 
             <br>
 
