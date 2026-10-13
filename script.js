@@ -9,28 +9,24 @@ const musicaJogo = new Audio(
     "assets/" + encodeURIComponent(nomeMusica)
 );
 
-// Guarda o ponto da faixa para continuar no mesmo trecho após as telas PHP.
 const CHAVE_POSICAO_MUSICA = "pokemonSurvivorsPosicaoMusica";
-const posicaoMusicaInicial = Number(
-    sessionStorage.getItem(CHAVE_POSICAO_MUSICA) || 0
-);
+const CHAVE_MUSICA_ATIVA = "pokemonSurvivorsMusica";
 
-musicaJogo.addEventListener("loadedmetadata", function() {
-    if (
-        sessionStorage.getItem("pokemonSurvivorsMusica") !== "on" ||
-        !Number.isFinite(posicaoMusicaInicial) ||
-        posicaoMusicaInicial <= 0 ||
-        !Number.isFinite(musicaJogo.duration) ||
-        musicaJogo.duration <= 0
-    ) {
-        return;
-    }
+const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
+const volumeInicial = Number.isFinite(volumeSalvo)
+    ? Math.min(1, Math.max(0, volumeSalvo))
+    : 0.45;
 
-    musicaJogo.currentTime = posicaoMusicaInicial % musicaJogo.duration;
-}, { once: true });
+musicaJogo.loop = true;
+musicaJogo.volume = volumeInicial;
+musicaJogo.preload = "auto";
+
+// O browser recria o Audio em cada navegação PHP. Antes de tocar,
+// espera os metadados e busca o ponto salvo, para não tocar desde 0.
+let preparacaoMusica = null;
 
 function salvarPosicaoMusica() {
-    if (sessionStorage.getItem("pokemonSurvivorsMusica") !== "on") {
+    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
         return;
     }
 
@@ -43,18 +39,91 @@ function salvarPosicaoMusica() {
 
 musicaJogo.addEventListener("timeupdate", salvarPosicaoMusica);
 window.addEventListener("pagehide", salvarPosicaoMusica);
+window.addEventListener("beforeunload", salvarPosicaoMusica);
+document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === "hidden") {
+        salvarPosicaoMusica();
+    }
+});
 
-const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
-const volumeInicial = Number.isFinite(volumeSalvo)
-    ? Math.min(1, Math.max(0, volumeSalvo))
-    : 0.45;
+function prepararMusica() {
+    if (preparacaoMusica) {
+        return preparacaoMusica;
+    }
 
-musicaJogo.loop = true;
-musicaJogo.volume = volumeInicial;
-musicaJogo.preload = "auto";
+    preparacaoMusica = new Promise(function(resolve) {
+        let finalizado = false;
+        let timeoutMetadados;
+        let timeoutBusca;
+
+        function concluir() {
+            if (finalizado) {
+                return;
+            }
+
+            finalizado = true;
+            clearTimeout(timeoutMetadados);
+            clearTimeout(timeoutBusca);
+            musicaJogo.removeEventListener("loadedmetadata", restaurarPosicao);
+            musicaJogo.removeEventListener("seeked", concluir);
+            musicaJogo.removeEventListener("error", concluir);
+            resolve();
+        }
+
+        function restaurarPosicao() {
+            if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
+                concluir();
+                return;
+            }
+
+            const tempoSalvo = Number(
+                sessionStorage.getItem(CHAVE_POSICAO_MUSICA) || 0
+            );
+            const duracao = musicaJogo.duration;
+
+            if (
+                !Number.isFinite(tempoSalvo) ||
+                tempoSalvo <= 0 ||
+                !Number.isFinite(duracao) ||
+                duracao <= 0
+            ) {
+                concluir();
+                return;
+            }
+
+            const destino = tempoSalvo % duracao;
+
+            if (Math.abs(musicaJogo.currentTime - destino) < 0.5) {
+                concluir();
+                return;
+            }
+
+            musicaJogo.addEventListener("seeked", concluir, { once: true });
+            timeoutBusca = setTimeout(concluir, 1800);
+
+            try {
+                musicaJogo.currentTime = destino;
+            } catch (erro) {
+                concluir();
+            }
+        }
+
+        if (musicaJogo.readyState >= 1) {
+            restaurarPosicao();
+        } else {
+            musicaJogo.addEventListener("loadedmetadata", restaurarPosicao, {
+                once: true
+            });
+            musicaJogo.addEventListener("error", concluir, { once: true });
+            timeoutMetadados = setTimeout(concluir, 6000);
+            musicaJogo.load();
+        }
+    });
+
+    return preparacaoMusica;
+}
 
 const telaAtual = document.body.dataset.tela;
-const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
 const telasComMusica = new Set(["jogo", "quiz", "evolucao", "falha_evolucao"]);
 
 function iniciarMusica() {
@@ -62,8 +131,14 @@ function iniciarMusica() {
         return;
     }
 
-    musicaJogo.play().catch(function() {
-        // O navegador pode bloquear a reprodução automática.
+    prepararMusica().then(function() {
+        if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
+            return;
+        }
+
+        musicaJogo.play().catch(function() {
+            // O navegador pode bloquear a reprodução automática.
+        });
     });
 }
 
@@ -73,27 +148,28 @@ function pararMusica() {
     sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
 }
 
-// Ao entrar em qualquer tela durante a partida,
-// tenta continuar a música em loop.
-if (telasComMusica.has(telaAtual) && musicaAtiva) {
+// Ao entrar no jogo, espera restaurar o ponto salvo antes de começar a tocar.
+if (
+    telasComMusica.has(telaAtual) &&
+    sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on"
+) {
     iniciarMusica();
 }
 
-// Se o navegador bloquear o autoplay depois de uma mudança de tela,
-// o primeiro clique ou tecla do jogador libera a reprodução.
+// Se o navegador bloquear o autoplay, o primeiro clique ou tecla tenta de novo.
 document.addEventListener("pointerdown", function() {
-    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on") {
         iniciarMusica();
     }
 });
 
 document.addEventListener("keydown", function() {
-    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on") {
         iniciarMusica();
     }
 });
 
-// Apertar JOGAR inicia a música e marca a partida como ativa.
+// Apertar JOGAR inicia uma nova faixa; os outros formulários guardam o ponto atual.
 document.querySelectorAll("form").forEach(function(form) {
     const acao = form.querySelector('input[name="acao"]');
 
@@ -105,7 +181,7 @@ document.querySelectorAll("form").forEach(function(form) {
         salvarPosicaoMusica();
 
         if (acao.value === "jogar") {
-            sessionStorage.setItem("pokemonSurvivorsMusica", "on");
+            sessionStorage.setItem(CHAVE_MUSICA_ATIVA, "on");
             sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
             musicaJogo.currentTime = 0;
             sessionStorage.setItem("pokemonSurvivorsInicio", String(Date.now()));
@@ -113,23 +189,22 @@ document.querySelectorAll("form").forEach(function(form) {
         }
 
         if (acao.value === "menu") {
-            sessionStorage.removeItem("pokemonSurvivorsMusica");
+            sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
             sessionStorage.removeItem("pokemonSurvivorsInicio");
             pararMusica();
         }
     });
 });
 
-// Se a tela atual for o menu, garante que não exista
-// uma marcação antiga de partida com música ativa.
+// O menu e o Game Over encerram a música completamente.
 if (telaAtual === "menu") {
-    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
     sessionStorage.removeItem("pokemonSurvivorsInicio");
     pararMusica();
 }
 
 if (telaAtual === "gameover") {
-    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
     pararMusica();
 }
 
