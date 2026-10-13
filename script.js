@@ -272,8 +272,8 @@ const tamanhosPokemon = {
     charmeleon: { largura: 108, altura: 108, hitboxLargura: 60, hitboxAltura: 58 },
     charizard: { largura: 112, altura: 112, hitboxLargura: 62, hitboxAltura: 60 },
     megacharizard: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 },
-    // A forma Y é maior visualmente, com uma hitbox menor que o desenho.
-    megacharizardy: { largura: 210, altura: 210, hitboxLargura: 88, hitboxAltura: 78 }
+    // Mega Charizard Y tem tamanho visual próximo ao X e hitbox separada.
+    megacharizardy: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
@@ -608,12 +608,7 @@ function iniciarQuizPorNivel() {
 }
 
 function recolherOrbesExp() {
-    if (
-        !gameplayAtivo ||
-        quizDeNivelIniciado ||
-        !world ||
-        player.pokemon === "megacharizardy"
-    ) {
+    if (!gameplayAtivo || quizDeNivelIniciado || !world) {
         return;
     }
 
@@ -626,7 +621,14 @@ function recolherOrbesExp() {
         const dy = player.y - y;
 
         if (Math.sqrt(dx * dx + dy * dy) <= 50) {
+            // Mega Charizard Y absorve as esferas, mas já está no nível máximo:
+            // elas desaparecem sem alterar EXP, contador ou barra.
             orbe.remove();
+
+            if (player.pokemon === "megacharizardy") {
+                continue;
+            }
+
             experienciaAtual = Math.min(EXP_POR_NIVEL, experienciaAtual + EXP_POR_ORBE);
             sessionStorage.setItem("pokemonSurvivorsExp", String(experienciaAtual));
             atualizarBarraExp();
