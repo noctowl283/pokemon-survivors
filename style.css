@@ -1515,14 +1515,15 @@ body {
 }
 
 #player.megacharizardy-jogo {
-    width: 210px !important;
-    height: 210px !important;
+    width: 180px !important;
+    height: 180px !important;
     translate: 0 34px;
 }
 
 #player.megacharizardy-jogo::after {
-    width: 94px;
-    height: 19px;
+    width: 82px;
+    height: 17px;
+    bottom: 15px;
     translate: 0 -34px;
 }
 
