@@ -1649,3 +1649,251 @@ body {
 .gameover-caixa form {
     margin-top: 24px;
 }
+
+/* ========================================
+   HUD REFINADA — COMPACTA E RESPONSIVA
+======================================== */
+.hud {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(860px, calc(100vw - 24px));
+    min-height: 64px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(7px, 1.2vw, 14px);
+    padding: 10px 12px;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(13, 21, 32, 0.94), rgba(12, 17, 25, 0.90));
+    border: 1px solid rgba(255, 210, 28, 0.58);
+    border-radius: 17px;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.30), inset 0 1px rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 300;
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.065);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.hud-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.nivel-legenda {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.nivel-hud strong {
+    color: #ffd21c;
+    font-size: 16px;
+}
+
+.vidas-hud {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 5px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.065);
+}
+
+#heart {
+    --heart-size: 28px;
+    position: static;
+    display: block;
+    flex: 0 0 auto;
+    width: 140px;
+    height: 28px;
+    background-image: url("assets/heart.webp");
+    background-repeat: repeat-x;
+    background-size: var(--heart-size) 28px;
+    background-position: left center;
+    pointer-events: none;
+}
+
+.exp-hud {
+    width: clamp(145px, 21vw, 220px);
+    min-width: 135px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.exp-legenda {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+}
+
+.exp-legenda > span:first-child {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.exp-legenda strong {
+    color: #fff;
+}
+
+.exp-trilho {
+    height: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(210, 235, 255, 0.76);
+    border-radius: 99px;
+    background: rgba(5, 17, 36, 0.95);
+}
+
+.exp-preenchimento {
+    border-radius: inherit;
+}
+
+.tempo-hud {
+    min-width: 76px;
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+}
+
+.tempo-hud .hud-icone {
+    color: #ffd21c;
+}
+
+.botao-menu-jogo {
+    display: inline-flex;
+    flex: 0 0 42px;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    min-width: 42px;
+    height: 40px;
+    margin-left: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 210, 28, 0.6);
+    border-radius: 12px;
+    background: rgba(255, 210, 28, 0.12);
+    color: #ffd21c;
+    font-size: 21px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.botao-menu-jogo:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 210, 28, 0.24);
+    box-shadow: 0 0 14px rgba(255, 210, 28, 0.18);
+}
+
+.botao-menu-jogo:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 600px) {
+    .hud {
+        top: 6px;
+        width: calc(100vw - 12px);
+        display: grid;
+        grid-template-columns: auto auto minmax(0, 1fr) 38px;
+        grid-template-areas:
+            "vidas nivel tempo pausa"
+            "exp exp exp exp";
+        gap: 6px;
+        padding: 7px 8px 9px;
+        border-radius: 14px;
+    }
+
+    .vidas-hud {
+        grid-area: vidas;
+        padding: 4px 5px;
+    }
+
+    #heart {
+        --heart-size: 22px;
+        width: 110px;
+        height: 24px;
+        background-size: var(--heart-size) 24px;
+    }
+
+    .nivel-hud {
+        grid-area: nivel;
+        gap: 4px;
+        padding: 7px 6px;
+        font-size: 12px;
+    }
+
+    .nivel-hud .hud-icone {
+        font-size: 15px;
+    }
+
+    .nivel-legenda {
+        font-size: 10px;
+    }
+
+    .nivel-hud strong {
+        font-size: 14px;
+    }
+
+    .exp-hud {
+        grid-area: exp;
+        width: 100%;
+        min-width: 0;
+        gap: 4px;
+    }
+
+    .exp-trilho {
+        height: 8px;
+    }
+
+    .tempo-hud {
+        grid-area: tempo;
+        min-width: 0;
+        gap: 4px;
+        padding: 7px 6px;
+        font-size: 13px;
+    }
+
+    .tempo-hud .hud-icone {
+        font-size: 16px;
+    }
+
+    .botao-menu-jogo {
+        grid-area: pausa;
+        width: 38px;
+        min-width: 38px;
+        flex-basis: 38px;
+        height: 36px;
+        border-radius: 10px;
+    }
+}
+
