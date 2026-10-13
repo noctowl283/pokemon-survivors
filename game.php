@@ -671,7 +671,7 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                     foreach ($perguntasQuiz[$perguntaAtual]["opcoes"] as $indice => $opcao) {
                         $opcoesEmbaralhadas[] = [
                             "resposta" => chr(65 + $indice),
-                            "texto" => preg_replace('/^[A-D]\\)\\s*/u', '', $opcao)
+                            "texto" => preg_replace('/^[A-D][)] ?/u', '', $opcao)
                         ];
                     }
                     shuffle($opcoesEmbaralhadas);
