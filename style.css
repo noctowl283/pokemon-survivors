@@ -1464,6 +1464,7 @@ body {
 #player.charmander-jogo {
     width: 78px !important;
     height: 78px !important;
+    translate: 0 14px;
 }
 
 #player.charmeleon-jogo {
@@ -1481,7 +1482,7 @@ body {
 #player.megacharizard-jogo {
     width: 180px !important;
     height: 180px !important;
-    translate: 0 16px;
+    translate: 0 30px;
 }
 
 /* Mantém a sombra na altura do chão enquanto o desenho desce. */
@@ -1500,10 +1501,14 @@ body {
     height: 12px;
 }
 
+#player.charmander-jogo::after {
+    translate: 0 -14px;
+}
+
 #player.megacharizard-jogo::after {
     width: 82px;
     height: 17px;
-    translate: 0 -16px;
+    translate: 0 -30px;
 }
 
 /* Tela única usada quando acabar o tempo ou todas as vidas. */
