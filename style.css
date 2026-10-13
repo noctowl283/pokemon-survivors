@@ -826,7 +826,18 @@ body {
     background-image: url("assets/megacharizard_sheets.png");
 }
 
+/* Mega Charizard Y usa os frames PNG individuais enviados ao projeto. */
+.evolucao-animacao .megacharizardy-evolucao {
+    background-image: url("assets/megacharizardY/mega_charizardY_baixo0.png");
+    background-size: contain;
+    background-position: center;
+}
+
 /* Pedra da Mega Evolução orbitando a bola branca. */
+.pedra-evolucao.pedra-evolucao-y {
+    background-image: url("assets/charizardite-y.png");
+}
+
 .pedra-evolucao {
     position: absolute;
     left: 50%;
@@ -1281,7 +1292,8 @@ body {
 #player.charmander-jogo,
 #player.charmeleon-jogo,
 #player.charizard-jogo,
-#player.megacharizard-jogo {
+#player.megacharizard-jogo,
+#player.megacharizardy-jogo {
     width: 70px;
     height: 70px;
     background-repeat: no-repeat !important;
@@ -1500,6 +1512,70 @@ body {
     width: 82px;
     height: 17px;
     translate: 0 -34px;
+}
+
+#player.megacharizardy-jogo {
+    width: 210px !important;
+    height: 210px !important;
+    translate: 0 34px;
+}
+
+#player.megacharizardy-jogo::after {
+    width: 94px;
+    height: 19px;
+    translate: 0 -34px;
+}
+
+/* Tela de vitória: exibida quando o tempo acaba usando Mega Charizard Y. */
+.tela-vitoria {
+    position: fixed;
+    inset: 0;
+    z-index: 950;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #fff;
+    background: radial-gradient(circle at center, #3a3150 0%, #191728 60%, #09090f 100%);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.vitoria-caixa {
+    width: min(620px, 94vw);
+    padding: clamp(26px, 5vw, 48px);
+    border: 3px solid #f4b942;
+    border-radius: 18px;
+    background: rgba(16, 14, 28, 0.95);
+    box-shadow: 0 0 32px rgba(255, 184, 50, 0.28);
+}
+
+.vitoria-caixa h1 {
+    margin-bottom: 20px;
+    color: #ffe18a;
+    font-size: clamp(38px, 7vw, 60px);
+    text-shadow: 3px 3px #7c3c18;
+}
+
+.vitoria-caixa h2 {
+    margin-bottom: 16px;
+    color: #ffb36b;
+    font-size: clamp(22px, 4vw, 30px);
+}
+
+.vitoria-caixa p {
+    line-height: 1.6;
+}
+
+.vitoria-caixa .vitoria-destaque {
+    margin-top: 22px;
+    color: #a6f3c7;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.vitoria-caixa form {
+    margin-top: 26px;
 }
 
 /* Tela única usada quando acabar o tempo ou todas as vidas. */
