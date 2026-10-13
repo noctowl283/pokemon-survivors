@@ -88,6 +88,12 @@ if (telaAtual === "menu") {
     pararMusica();
 }
 
+if (telaAtual === "gameover") {
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    pararMusica();
+}
+
+
 
 // ========================================
 // MENU DA PARTIDA E VOLUME
@@ -249,15 +255,24 @@ const heartElement = document.getElementById("heart");
 const hpElement = document.getElementById("hp");
 const TAMANHO_MAPA = 10000;
 
+const pokemonDoServidor = document.body.dataset.pokemon || "charmander";
+const tamanhosPokemon = {
+    charmander: { largura: 78, altura: 78 },
+    charmeleon: { largura: 92, altura: 92 },
+    charizard: { largura: 112, altura: 112 },
+    megacharizard: { largura: 132, altura: 132 }
+};
+const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
+
 const player = {
     x: 5000,
     y: 5000,
     vida: 5,
     vidaMaxima: 5,
-    pokemon: document.body.dataset.pokemon || "charmander",
+    pokemon: pokemonDoServidor,
     direcao: "down",
-    largura: 70,
-    altura: 70,
+    largura: tamanhoPokemonAtual.largura,
+    altura: tamanhoPokemonAtual.altura,
     velocidade: 5,
     nivel: Number(document.body.dataset.nivel || 1),
     podeMover: false
@@ -481,18 +496,24 @@ function moverPlayer() {
 }
 
 const expValorElement = document.getElementById("exp-valor");
+const expTotalElement = document.getElementById("exp-total");
 const expPreenchimentoElement = document.getElementById("exp-preenchimento");
-const EXP_POR_NIVEL = 100;
+const EXP_POR_NIVEL = 100 + Math.max(0, player.nivel - 1) * 50;
 const EXP_POR_ORBE = 20;
 const experienciaSalva = Number(sessionStorage.getItem("pokemonSurvivorsExp") || 0);
 let experienciaAtual = gameplayAtivo && Number.isFinite(experienciaSalva)
     ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, experienciaSalva))
     : 0;
 let quizDeNivelIniciado = false;
+let gameOverIniciado = false;
 
 function atualizarBarraExp() {
     if (expValorElement) {
         expValorElement.textContent = String(experienciaAtual);
+    }
+
+    if (expTotalElement) {
+        expTotalElement.textContent = String(EXP_POR_NIVEL);
     }
 
     if (expPreenchimentoElement) {
@@ -771,6 +792,11 @@ function verificarDano(monstro) {
             atualizarVida();
         }
 
+        if (coracoes <= 0) {
+            finalizarPartida("vida");
+            return;
+        }
+
         if (playerElement) {
             playerElement.classList.add("dano");
         }
@@ -795,30 +821,70 @@ function verificarDano(monstro) {
     }
 }
 
-// O cronômetro continua contando durante as telas PHP de quiz/evolução.
+// Cronômetro regressivo de cinco minutos. Continua contando nas telas PHP.
+const DURACAO_PARTIDA_SEGUNDOS = 5 * 60;
+const telasAtivasPartida = new Set(["jogo", "quiz", "evolucao", "falha_evolucao"]);
 const tempo = document.getElementById("tempo");
+let inicioPartidaMs = Number(sessionStorage.getItem("pokemonSurvivorsInicio"));
 
-if (tempo) {
-    let inicio = Number(sessionStorage.getItem("pokemonSurvivorsInicio"));
+if (
+    telasAtivasPartida.has(telaAtual) &&
+    (!Number.isFinite(inicioPartidaMs) || inicioPartidaMs <= 0)
+) {
+    inicioPartidaMs = Date.now();
+    sessionStorage.setItem("pokemonSurvivorsInicio", String(inicioPartidaMs));
+}
 
+function segundosDecorridosPartida() {
+    const inicio = Number(sessionStorage.getItem("pokemonSurvivorsInicio"));
     if (!Number.isFinite(inicio) || inicio <= 0) {
-        inicio = Date.now();
-        sessionStorage.setItem("pokemonSurvivorsInicio", String(inicio));
+        return 0;
+    }
+    return Math.max(0, Math.floor((Date.now() - inicio) / 1000));
+}
+
+function finalizarPartida(motivo) {
+    if (gameOverIniciado) {
+        return;
     }
 
-    function atualizarTempo() {
-        const segundos = Math.floor((Date.now() - inicio) / 1000);
-        const minutos = Math.floor(segundos / 60);
-        const segundosRestantes = segundos % 60;
+    gameOverIniciado = true;
+    player.podeMover = false;
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
+    sessionStorage.removeItem("pokemonSurvivorsInicio");
+    pararMusica();
 
+    window.location.href =
+        "index.php?acao=gameover&motivo=" + encodeURIComponent(motivo);
+}
+
+function atualizarCronometroPartida() {
+    if (!telasAtivasPartida.has(telaAtual)) {
+        return;
+    }
+
+    const restante = Math.max(
+        0,
+        DURACAO_PARTIDA_SEGUNDOS - segundosDecorridosPartida()
+    );
+
+    if (tempo) {
+        const minutos = Math.floor(restante / 60);
+        const segundos = restante % 60;
         tempo.textContent =
             String(minutos).padStart(2, "0") +
             ":" +
-            String(segundosRestantes).padStart(2, "0");
+            String(segundos).padStart(2, "0");
     }
 
-    setInterval(atualizarTempo, 1000);
-    atualizarTempo();
+    if (restante <= 0) {
+        finalizarPartida("tempo");
+    }
+}
+
+if (telasAtivasPartida.has(telaAtual)) {
+    atualizarCronometroPartida();
+    setInterval(atualizarCronometroPartida, 250);
 }
 
 // Os formulários de início/menu redefinem somente o estado de uma nova partida.
@@ -861,6 +927,10 @@ if (gameplayAtivo) {
     iniciarIntro();
 
     function gameLoop(momento) {
+        if (gameOverIniciado) {
+            return;
+        }
+
         moverPlayer();
         recolherOrbesExp();
         atualizarFrameCaminhada(momento || performance.now());
@@ -875,7 +945,28 @@ if (gameplayAtivo) {
         requestAnimationFrame(gameLoop);
     }
 
-    setInterval(spawnMonster, 3000);
+    function agendarSpawnProgressivo() {
+        if (gameOverIniciado || !gameplayAtivo || !world) {
+            return;
+        }
+
+        const segundos = segundosDecorridosPartida();
+        const maxInimigos = Math.min(40, 8 + Math.floor(segundos / 20) * 2);
+        const quantidadeSpawn = Math.min(5, 1 + Math.floor(segundos / 60));
+
+        for (let i = 0; i < quantidadeSpawn; i++) {
+            if (world.querySelectorAll(".zubat").length >= maxInimigos) {
+                break;
+            }
+            spawnMonster();
+        }
+
+        // Começa em 1,4 s e reduz progressivamente até 400 ms.
+        const intervalo = Math.max(400, 1400 - Math.floor(segundos / 20) * 65);
+        setTimeout(agendarSpawnProgressivo, intervalo);
+    }
+
+    agendarSpawnProgressivo();
     gameLoop();
 }
 
