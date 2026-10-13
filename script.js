@@ -212,6 +212,11 @@ function caminhoSpriteAtual() {
         return "assets/megacharizard/" + arquivo;
     }
 
+    if (pokemon === "megacharizardy") {
+        arquivo = "mega_charizardY_" + direcaoArquivo + frame + ".png";
+        return "assets/megacharizardY/" + arquivo;
+    }
+
     return "assets/charmander/charmander-baixo1-sheet.png";
 }
 
@@ -266,8 +271,9 @@ const tamanhosPokemon = {
     charmander: { largura: 78, altura: 78, hitboxLargura: 50, hitboxAltura: 50 },
     charmeleon: { largura: 108, altura: 108, hitboxLargura: 60, hitboxAltura: 58 },
     charizard: { largura: 112, altura: 112, hitboxLargura: 62, hitboxAltura: 60 },
-    // O sprite continua grande, mas a colisão considera só a área central do corpo.
-    megacharizard: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 }
+    megacharizard: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 },
+    // A forma Y é maior visualmente, com uma hitbox menor que o desenho.
+    megacharizardy: { largura: 210, altura: 210, hitboxLargura: 88, hitboxAltura: 78 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
@@ -339,7 +345,8 @@ const intervaloAtaquePorPokemon = {
     charmander: 700,
     charmeleon: 520,
     charizard: 380,
-    megacharizard: 250
+    megacharizard: 250,
+    megacharizardy: 180
 };
 
 function atualizarVida() {
@@ -522,18 +529,43 @@ const expPreenchimentoElement = document.getElementById("exp-preenchimento");
 const EXP_POR_NIVEL = 100 + Math.max(0, player.nivel - 1) * 50;
 const EXP_POR_ORBE = 20;
 const experienciaSalva = Number(sessionStorage.getItem("pokemonSurvivorsExp") || 0);
-let experienciaAtual = gameplayAtivo && Number.isFinite(experienciaSalva)
-    ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, experienciaSalva))
-    : 0;
+let experienciaAtual = player.pokemon === "megacharizardy"
+    ? EXP_POR_NIVEL
+    : (gameplayAtivo && Number.isFinite(experienciaSalva)
+        ? Math.min(EXP_POR_NIVEL - 1, Math.max(0, experienciaSalva))
+        : 0);
+
+if (player.pokemon === "megacharizardy") {
+    sessionStorage.setItem("pokemonSurvivorsExp", String(EXP_POR_NIVEL));
+}
+
 let quizDeNivelIniciado = false;
 let gameOverIniciado = false;
 
 function atualizarBarraExp() {
+    if (player.pokemon === "megacharizardy") {
+        if (expValorElement) {
+            expValorElement.textContent = "MAX";
+        }
+
+        if (expTotalElement) {
+            expTotalElement.textContent = "";
+            expTotalElement.style.display = "none";
+        }
+
+        if (expPreenchimentoElement) {
+            expPreenchimentoElement.style.width = "100%";
+        }
+
+        return;
+    }
+
     if (expValorElement) {
         expValorElement.textContent = String(experienciaAtual);
     }
 
     if (expTotalElement) {
+        expTotalElement.style.display = "";
         expTotalElement.textContent = String(EXP_POR_NIVEL);
     }
 
@@ -576,7 +608,12 @@ function iniciarQuizPorNivel() {
 }
 
 function recolherOrbesExp() {
-    if (!gameplayAtivo || quizDeNivelIniciado || !world) {
+    if (
+        !gameplayAtivo ||
+        quizDeNivelIniciado ||
+        !world ||
+        player.pokemon === "megacharizardy"
+    ) {
         return;
     }
 
