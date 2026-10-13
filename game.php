@@ -665,13 +665,24 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                 <form method="post" class="quiz-opcoes">
                     <input type="hidden" name="acao" value="responder_quiz">
 
-                    <?php foreach ($perguntasQuiz[$perguntaAtual]["opcoes"] as $indice => $opcao): ?>
+                    <?php
+                    // Embaralha as alternativas sem perder a letra original da resposta correta.
+                    $opcoesEmbaralhadas = [];
+                    foreach ($perguntasQuiz[$perguntaAtual]["opcoes"] as $indice => $opcao) {
+                        $opcoesEmbaralhadas[] = [
+                            "resposta" => chr(65 + $indice),
+                            "texto" => preg_replace('/^[A-D]\\)\\s*/u', '', $opcao)
+                        ];
+                    }
+                    shuffle($opcoesEmbaralhadas);
+                    ?>
+                    <?php foreach ($opcoesEmbaralhadas as $indiceEmbaralhado => $opcao): ?>
                         <button
                             class="opcao"
                             type="submit"
                             name="resposta"
-                            value="<?= chr(65 + $indice) ?>">
-                            <?= htmlspecialchars($opcao) ?>
+                            value="<?= htmlspecialchars($opcao["resposta"], ENT_QUOTES, "UTF-8") ?>">
+                            <?= chr(65 + $indiceEmbaralhado) ?>) <?= htmlspecialchars($opcao["texto"]) ?>
                         </button>
                     <?php endforeach; ?>
                 </form>
