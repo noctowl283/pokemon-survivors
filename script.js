@@ -272,8 +272,8 @@ const tamanhosPokemon = {
     charmeleon: { largura: 108, altura: 108, hitboxLargura: 60, hitboxAltura: 58 },
     charizard: { largura: 112, altura: 112, hitboxLargura: 62, hitboxAltura: 60 },
     megacharizard: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 },
-    // Mega Charizard Y tem tamanho visual próximo ao X e hitbox separada.
-    megacharizardy: { largura: 180, altura: 180, hitboxLargura: 78, hitboxAltura: 70 }
+    // Mega Charizard Y fica menor que Mega Charizard X, com hitbox proporcional.
+    megacharizardy: { largura: 160, altura: 160, hitboxLargura: 70, hitboxAltura: 64 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
@@ -289,7 +289,13 @@ const player = {
     alturaVisual: tamanhoPokemonAtual.altura,
     largura: tamanhoPokemonAtual.hitboxLargura || tamanhoPokemonAtual.largura,
     altura: tamanhoPokemonAtual.hitboxAltura || tamanhoPokemonAtual.altura,
-    velocidade: 5,
+    velocidade: ({
+        charmander: 5.8,
+        charmeleon: 6.4,
+        charizard: 7.0,
+        megacharizard: 7.6,
+        megacharizardy: 8.2
+    })[pokemonDoServidor] || 5.8,
     nivel: Number(document.body.dataset.nivel || 1),
     podeMover: false
 };
@@ -588,6 +594,42 @@ function criarOrbeExp(x, y) {
     world.appendChild(orbe);
 }
 
+function criarCoracao(x, y) {
+    if (!world) {
+        return;
+    }
+
+    const coracao = document.createElement("div");
+    coracao.className = "heart-drop";
+    coracao.textContent = "❤️";
+    coracao.setAttribute("role", "img");
+    coracao.setAttribute("aria-label", "Coração: recupera uma vida");
+    coracao.style.left = (x - 14) + "px";
+    coracao.style.top = (y - 14) + "px";
+    world.appendChild(coracao);
+}
+
+function recolherCoracoes() {
+    if (!gameplayAtivo || !world || coracoes >= 5) {
+        return;
+    }
+
+    const coracoesNoMapa = world.querySelectorAll(".heart-drop");
+
+    for (const coracao of coracoesNoMapa) {
+        const x = Number.parseFloat(coracao.style.left) + 14;
+        const y = Number.parseFloat(coracao.style.top) + 14;
+        const dx = player.x - x;
+        const dy = player.y - y;
+
+        if (Math.sqrt(dx * dx + dy * dy) <= 46) {
+            coracoes = Math.min(5, coracoes + 1);
+            atualizarVida();
+            coracao.remove();
+        }
+    }
+}
+
 function iniciarQuizPorNivel() {
     if (quizDeNivelIniciado) {
         return;
@@ -665,10 +707,22 @@ function atualizarCamera() {
 function criarFireBall() {
     const fireball = document.createElement("div");
     fireball.classList.add("fireball", player.direcao);
+
+    const tamanhosBolaFogo = {
+        charmander: 36,
+        charmeleon: 44,
+        charizard: 52,
+        megacharizard: 60,
+        megacharizardy: 68
+    };
+    const tamanhoBola = tamanhosBolaFogo[player.pokemon] || tamanhosBolaFogo.charmander;
+
+    fireball.style.width = tamanhoBola + "px";
+    fireball.style.height = tamanhoBola + "px";
     world.appendChild(fireball);
 
-    let x = player.x - 15;
-    let y = player.y - 15;
+    let x = player.x - tamanhoBola / 2;
+    let y = player.y - tamanhoBola / 2;
     const velocidade = 10;
     let direcaoX = 0;
     let direcaoY = 0;
@@ -696,11 +750,17 @@ function criarFireBall() {
 
             if (
                 x < monstroX + 70 &&
-                x + 45 > monstroX &&
+                x + tamanhoBola > monstroX &&
                 y < monstroY + 70 &&
-                y + 45 > monstroY
+                y + tamanhoBola > monstroY
             ) {
                 criarOrbeExp(monstroX + 26, monstroY + 26);
+
+                // 8% de chance (aprox. 1 em 12 inimigos), somente quando falta vida.
+                if (coracoes < 5 && Math.random() < 0.08) {
+                    criarCoracao(monstroX + 35, monstroY + 35);
+                }
+
                 monstro.remove();
                 fireball.remove();
                 return;
@@ -991,6 +1051,7 @@ if (gameplayAtivo) {
 
         moverPlayer();
         recolherOrbesExp();
+        recolherCoracoes();
         atualizarFrameCaminhada(momento || performance.now());
         atualizarPlayer();
         atualizarCamera();
