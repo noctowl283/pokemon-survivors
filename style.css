@@ -1012,3 +1012,261 @@ body {
 }
 
 
+
+
+/* ========================================
+   MAPA DO GAMEPLAY INTEGRADO
+   O PHP entrega o mapa; o JavaScript controla
+   movimento, colisões, ataques e inimigos em tempo real.
+======================================== */
+
+.tela-jogo {
+    position: fixed;
+    inset: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    padding: 0;
+    overflow: hidden;
+    text-align: left;
+    background: #315c2b;
+}
+
+#game {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #315c2b;
+    z-index: 0;
+}
+
+#world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 10000px;
+    height: 10000px;
+    overflow: visible;
+    background-color: #315c2b;
+    background-image:
+        radial-gradient(#3b6b32 2px, transparent 2px),
+        radial-gradient(#294f25 2px, transparent 2px);
+    background-size: 50px 50px, 80px 80px;
+    will-change: left, top;
+}
+
+#objects {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.tree,
+.rock {
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+    line-height: 1;
+}
+
+.tree {
+    z-index: 10;
+    font-size: 80px;
+}
+
+.rock {
+    z-index: 5;
+    font-size: 45px;
+}
+
+#player {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    z-index: 50;
+    image-rendering: pixelated;
+    pointer-events: none;
+    user-select: none;
+    will-change: left, top;
+}
+
+/* Sombra simples no chão, sem deslocar o sprite. */
+#player::after {
+    content: "";
+    position: absolute;
+    width: 38px;
+    height: 10px;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.32);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+#player.dano {
+    filter: brightness(0) saturate(100%)
+        invert(20%) sepia(100%) saturate(7000%)
+        hue-rotate(350deg) brightness(100%);
+}
+
+#heart {
+    position: fixed;
+    top: 68px;
+    left: 16px;
+    width: 175px;
+    height: 35px;
+    background-image: url("assets/heart.webp");
+    background-repeat: repeat-x;
+    background-size: 35px 32px;
+    z-index: 250;
+    pointer-events: none;
+}
+
+#monster {
+    display: none;
+}
+
+.zubat {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background-image: url("assets/zubat.webp");
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.fireball {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    background-image: url("assets/fireball.webp");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.fireball.left { transform: scaleX(-1); }
+.fireball.right { transform: scaleX(1); }
+.fireball.up { transform: rotate(-90deg); }
+.fireball.down { transform: rotate(90deg); }
+
+#pokemon-intro {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 400;
+    opacity: 1;
+}
+
+#pokebola {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 75px;
+    height: 75px;
+    transform: translate(-50%, -50%);
+    background-image: url("assets/pokebola.png");
+    background-repeat: no-repeat;
+    background-size: 225px 75px;
+    background-position: 0 0;
+    image-rendering: pixelated;
+}
+
+#charmander-intro {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 70px;
+    height: 70px;
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+    background-image: url("assets/charmander-sheet.png");
+    background-repeat: no-repeat;
+    background-size: 210px 210px;
+    background-position: 0 0;
+    image-rendering: pixelated;
+    transition: opacity 0.4s ease, transform 0.6s ease;
+}
+
+#charmander-intro.aparecer {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.5);
+}
+
+#pokemon-intro.finalizar {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: 58px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 9px 14px;
+    color: #fff;
+    background: rgba(10, 18, 10, 0.82);
+    border-bottom: 2px solid #2455a4;
+    z-index: 300;
+}
+
+.hud-item {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.botao-menu-jogo {
+    margin-left: auto;
+}
+
+.menu-overlay {
+    z-index: 600;
+}
+
+.form-teste-quiz {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 300;
+}
+
+.mensagem-jogo {
+    position: fixed;
+    left: 50%;
+    bottom: 78px;
+    transform: translateX(-50%);
+    z-index: 300;
+    max-width: min(90vw, 600px);
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.72);
+    text-align: center;
+    pointer-events: none;
+}
+
+.quiz-integracao {
+    display: none;
+}
+
