@@ -160,12 +160,120 @@ document.addEventListener("keydown", function(event) {
 
 
 // ========================================
-// MOVIMENTO — PESSOA 1
+// ========================================
+// GAMEPLAY — MOVIMENTO, MAPA E COMBATE
+// Configuração, mapa, quiz e evolução ficam no PHP.
+// As ações em tempo real continuam no navegador.
 // ========================================
 
+const gameplayAtivo = document.getElementById("world") !== null;
+const playerElement = document.getElementById("player");
+const world = document.getElementById("world");
+const objectsElement = document.getElementById("objects");
+const heartElement = document.getElementById("heart");
+const hpElement = document.getElementById("hp");
+const TAMANHO_MAPA = 10000;
+
+const player = {
+    x: 5000,
+    y: 5000,
+    vida: 5,
+    vidaMaxima: 5,
+    pokemon: document.body.dataset.pokemon || "charmander",
+    direcao: "down",
+    largura: 70,
+    altura: 70,
+    velocidade: 5,
+    nivel: Number(document.body.dataset.nivel || 1),
+    podeMover: false
+};
+
+// A posição e as vidas ficam no navegador para não reiniciarem
+// quando a partida abre o quiz PHP e depois retorna ao mapa.
+if (gameplayAtivo && sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
+    try {
+        const posicaoSalva = JSON.parse(
+            sessionStorage.getItem("pokemonSurvivorsPosicao") || "null"
+        );
+
+        if (
+            posicaoSalva &&
+            Number.isFinite(posicaoSalva.x) &&
+            Number.isFinite(posicaoSalva.y)
+        ) {
+            player.x = Math.min(9900, Math.max(100, posicaoSalva.x));
+            player.y = Math.min(9900, Math.max(100, posicaoSalva.y));
+        }
+    } catch (erro) {
+        sessionStorage.removeItem("pokemonSurvivorsPosicao");
+    }
+}
+
+const vidasSalvas = sessionStorage.getItem("pokemonSurvivorsVidas");
+let coracoes = gameplayAtivo && vidasSalvas !== null
+    ? Math.min(5, Math.max(0, Number(vidasSalvas) || 0))
+    : 5;
+
+const objetos = gameplayAtivo
+    ? Array.from(document.querySelectorAll("#objects [data-tipo]")).map(function(elemento) {
+        return {
+            x: Number(elemento.dataset.x),
+            y: Number(elemento.dataset.y),
+            largura: Number(elemento.dataset.largura),
+            altura: Number(elemento.dataset.altura),
+            elemento: elemento
+        };
+    })
+    : [];
+
 const teclas = {};
-const spriteJogador = document.querySelector(".jogador > div");
-const teclasMovimento = new Set(["w", "a", "s", "d"]);
+const teclasMovimento = new Set([
+    "w", "a", "s", "d",
+    "arrowup", "arrowdown", "arrowleft", "arrowright"
+]);
+let podeAtacar = true;
+let podeReceberDano = true;
+
+function atualizarVida() {
+    if (heartElement) {
+        heartElement.style.width = (coracoes * 35) + "px";
+        heartElement.setAttribute("aria-label", coracoes + " vidas restantes");
+    }
+
+    if (hpElement) {
+        hpElement.textContent = String(coracoes);
+    }
+
+    sessionStorage.setItem("pokemonSurvivorsVidas", String(coracoes));
+}
+
+function atualizarDirecaoSprite(direcao) {
+    if (!playerElement || !direcao) {
+        return;
+    }
+
+    player.direcao = direcao;
+    playerElement.dataset.direcao = direcao;
+    playerElement.classList.remove(
+        "direcao-up",
+        "direcao-down",
+        "direcao-left",
+        "direcao-right"
+    );
+    playerElement.classList.add("direcao-" + direcao);
+}
+
+function atualizarAnimacaoJogador() {
+    if (!playerElement) {
+        return;
+    }
+
+    const andando = Array.from(teclasMovimento).some(function(tecla) {
+        return teclas[tecla];
+    });
+
+    playerElement.classList.toggle("andando", andando);
+}
 
 document.addEventListener("keydown", function(event) {
     const tecla = event.key.toLowerCase();
@@ -175,98 +283,363 @@ document.addEventListener("keydown", function(event) {
 
         const direcoes = {
             w: "up",
+            arrowup: "up",
             s: "down",
+            arrowdown: "down",
             a: "left",
-            d: "right"
+            arrowleft: "left",
+            d: "right",
+            arrowright: "right"
         };
 
         atualizarDirecaoSprite(direcoes[tecla]);
         atualizarAnimacaoJogador();
+    }
+
+    if (
+        gameplayAtivo &&
+        event.code === "Space" &&
+        !event.repeat &&
+        player.podeMover &&
+        podeAtacar
+    ) {
+        event.preventDefault();
+        criarFireBall();
+        podeAtacar = false;
+
+        setTimeout(function() {
+            podeAtacar = true;
+        }, 300);
     }
 });
 
 document.addEventListener("keyup", function(event) {
     const tecla = event.key.toLowerCase();
 
-    if (["w", "a", "s", "d"].includes(tecla)) {
+    if (teclasMovimento.has(tecla)) {
         teclas[tecla] = false;
         atualizarAnimacaoJogador();
     }
 });
 
-function atualizarDirecaoSprite(direcao) {
-    if (!spriteJogador || !direcao) {
-        return;
+function posicaoLivre(x, y, largura, altura) {
+    const margem = 40;
+
+    if (
+        x < player.x + 200 &&
+        x + largura > player.x - 200 &&
+        y < player.y + 200 &&
+        y + altura > player.y - 200
+    ) {
+        return false;
     }
 
-    const direcaoAtual = spriteJogador.dataset.direcao;
-
-    if (direcaoAtual === direcao) {
-        return;
-    }
-
-    spriteJogador.dataset.direcao = direcao;
-
-    spriteJogador.classList.remove(
-        "direcao-up",
-        "direcao-down",
-        "direcao-left",
-        "direcao-right"
-    );
-
-    spriteJogador.classList.add("direcao-" + direcao);
+    return !objetos.some(function(objeto) {
+        return (
+            x < objeto.x + objeto.largura + margem &&
+            x + largura + margem > objeto.x &&
+            y < objeto.y + objeto.altura + margem &&
+            y + altura + margem > objeto.y
+        );
+    });
 }
 
-function atualizarAnimacaoJogador() {
-    if (!spriteJogador) {
-        return;
-    }
+function colidiuComObjeto(x, y) {
+    const margem = 8;
+    const jogador = {
+        x: x - player.largura / 2 + margem,
+        y: y - player.altura / 2 + margem,
+        largura: player.largura - margem * 2,
+        altura: player.altura - margem * 2
+    };
 
-    const andando =
-        teclas["w"] ||
-        teclas["a"] ||
-        teclas["s"] ||
-        teclas["d"];
-
-    spriteJogador.classList.toggle("andando", andando);
+    return objetos.some(function(objeto) {
+        return (
+            jogador.x < objeto.x + objeto.largura &&
+            jogador.x + jogador.largura > objeto.x &&
+            jogador.y < objeto.y + objeto.altura &&
+            jogador.y + jogador.altura > objeto.y
+        );
+    });
 }
-
-// Começa olhando para baixo, usando o frame central.
-atualizarDirecaoSprite("down");
 
 function moverPlayer() {
-    if (typeof player === "undefined" || !player.podeMover) {
+    if (!player.podeMover) {
         return;
     }
 
-    if (teclas["w"]) {
-        player.y -= player.velocidade;
-        player.direcao = "up";
+    if (teclas["w"] || teclas["arrowup"]) {
+        const novoY = player.y - player.velocidade;
+        if (!colidiuComObjeto(player.x, novoY)) {
+            player.y = novoY;
+        }
+        atualizarDirecaoSprite("up");
     }
 
-    if (teclas["s"]) {
-        player.y += player.velocidade;
-        player.direcao = "down";
+    if (teclas["s"] || teclas["arrowdown"]) {
+        const novoY = player.y + player.velocidade;
+        if (!colidiuComObjeto(player.x, novoY)) {
+            player.y = novoY;
+        }
+        atualizarDirecaoSprite("down");
     }
 
-    if (teclas["a"]) {
-        player.x -= player.velocidade;
-        player.direcao = "left";
+    if (teclas["a"] || teclas["arrowleft"]) {
+        const novoX = player.x - player.velocidade;
+        if (!colidiuComObjeto(novoX, player.y)) {
+            player.x = novoX;
+        }
+        atualizarDirecaoSprite("left");
     }
 
-    if (teclas["d"]) {
-        player.x += player.velocidade;
-        player.direcao = "right";
+    if (teclas["d"] || teclas["arrowright"]) {
+        const novoX = player.x + player.velocidade;
+        if (!colidiuComObjeto(novoX, player.y)) {
+            player.x = novoX;
+        }
+        atualizarDirecaoSprite("right");
     }
 
-    atualizarDirecaoSprite(player.direcao);
+    const limite = 100;
+    player.x = Math.min(TAMANHO_MAPA - limite, Math.max(limite, player.x));
+    player.y = Math.min(TAMANHO_MAPA - limite, Math.max(limite, player.y));
 }
 
+function atualizarPlayer() {
+    if (!playerElement) {
+        return;
+    }
 
-// ========================================
-// CRONÔMETRO
-// ========================================
+    playerElement.style.left = (player.x - player.largura / 2) + "px";
+    playerElement.style.top = (player.y - player.altura / 2) + "px";
+}
 
+function atualizarCamera() {
+    if (!world) {
+        return;
+    }
+
+    const centroX = window.innerWidth / 2;
+    const centroY = window.innerHeight / 2;
+
+    world.style.left = (centroX - player.x) + "px";
+    world.style.top = (centroY - player.y) + "px";
+}
+
+function criarFireBall() {
+    const fireball = document.createElement("div");
+    fireball.classList.add("fireball", player.direcao);
+    world.appendChild(fireball);
+
+    let x = player.x - 15;
+    let y = player.y - 15;
+    const velocidade = 10;
+    let direcaoX = 0;
+    let direcaoY = 0;
+
+    if (player.direcao === "up") direcaoY = -1;
+    if (player.direcao === "down") direcaoY = 1;
+    if (player.direcao === "left") direcaoX = -1;
+    if (player.direcao === "right") direcaoX = 1;
+
+    function moverFireBall() {
+        if (!fireball.isConnected) {
+            return;
+        }
+
+        x += direcaoX * velocidade;
+        y += direcaoY * velocidade;
+        fireball.style.left = x + "px";
+        fireball.style.top = y + "px";
+
+        const monstros = document.querySelectorAll(".zubat");
+
+        for (const monstro of monstros) {
+            const monstroX = Number.parseFloat(monstro.style.left);
+            const monstroY = Number.parseFloat(monstro.style.top);
+
+            if (
+                x < monstroX + 70 &&
+                x + 45 > monstroX &&
+                y < monstroY + 70 &&
+                y + 45 > monstroY
+            ) {
+                monstro.remove();
+                fireball.remove();
+                return;
+            }
+        }
+
+        if (x < 0 || y < 0 || x > TAMANHO_MAPA || y > TAMANHO_MAPA) {
+            fireball.remove();
+            return;
+        }
+
+        requestAnimationFrame(moverFireBall);
+    }
+
+    moverFireBall();
+}
+
+const pokemonIntro = document.getElementById("pokemon-intro");
+const pokebolaIntro = document.getElementById("pokebola");
+const charmanderIntro = document.getElementById("charmander-intro");
+
+function iniciarPlayer() {
+    atualizarPlayer();
+    atualizarDirecaoSprite("down");
+}
+
+function iniciarIntro() {
+    if (!gameplayAtivo || !pokemonIntro) {
+        return;
+    }
+
+    // A introdução acontece uma vez por partida, não ao retornar do quiz.
+    if (sessionStorage.getItem("pokemonSurvivorsIntroVisto") === "on") {
+        pokemonIntro.remove();
+        player.podeMover = true;
+        return;
+    }
+
+    player.podeMover = false;
+
+    if (pokebolaIntro) {
+        pokebolaIntro.style.display = "block";
+        pokebolaIntro.style.backgroundPosition = "0 0";
+    }
+
+    setTimeout(function() {
+        if (pokebolaIntro) pokebolaIntro.style.backgroundPosition = "-75px 0";
+    }, 800);
+
+    setTimeout(function() {
+        if (pokebolaIntro) pokebolaIntro.style.backgroundPosition = "-150px 0";
+    }, 1200);
+
+    setTimeout(function() {
+        if (pokebolaIntro) pokebolaIntro.style.display = "none";
+
+        if (charmanderIntro) {
+            charmanderIntro.classList.add("aparecer");
+        }
+
+        const somCharmander = new Audio("assets/myinstants.mp3");
+        somCharmander.volume = 0.3;
+        somCharmander.play().catch(function() {});
+    }, 1500);
+
+    setTimeout(function() {
+        if (pokemonIntro) pokemonIntro.classList.add("finalizar");
+    }, 2800);
+
+    setTimeout(function() {
+        if (pokemonIntro) pokemonIntro.remove();
+        player.podeMover = true;
+        sessionStorage.setItem("pokemonSurvivorsIntroVisto", "on");
+    }, 3400);
+}
+
+function spawnMonster() {
+    if (!gameplayAtivo || !world) {
+        return;
+    }
+
+    const modelo = document.getElementById("monster");
+    if (!modelo) {
+        return;
+    }
+
+    const novoMonster = modelo.cloneNode(true);
+    novoMonster.removeAttribute("id");
+    novoMonster.classList.add("zubat");
+
+    const distanciaSpawn = 1500;
+    let x = player.x + (Math.random() * distanciaSpawn * 2 - distanciaSpawn);
+    let y = player.y + (Math.random() * distanciaSpawn * 2 - distanciaSpawn);
+
+    x = Math.min(TAMANHO_MAPA - 100, Math.max(100, x));
+    y = Math.min(TAMANHO_MAPA - 100, Math.max(100, y));
+
+    novoMonster.style.left = x + "px";
+    novoMonster.style.top = y + "px";
+    world.appendChild(novoMonster);
+
+    const velocidade = 3;
+
+    function seguirPlayer() {
+        if (!novoMonster.isConnected) {
+            return;
+        }
+
+        const dx = player.x - x;
+        const dy = player.y - y;
+        const distancia = Math.sqrt(dx * dx + dy * dy);
+
+        if (distancia > 0) {
+            x += (dx / distancia) * velocidade;
+            y += (dy / distancia) * velocidade;
+
+            novoMonster.style.left = x + "px";
+            novoMonster.style.top = y + "px";
+            verificarDano(novoMonster);
+        }
+
+        requestAnimationFrame(seguirPlayer);
+    }
+
+    seguirPlayer();
+}
+
+function tocarSomDano() {
+    const somDano = new Audio("assets/roblox-death-sound-effect.mp3");
+    somDano.play().catch(function() {});
+}
+
+function verificarDano(monstro) {
+    if (!monstro.isConnected) {
+        return;
+    }
+
+    const monstroX = Number.parseFloat(monstro.style.left) + 35;
+    const monstroY = Number.parseFloat(monstro.style.top) + 35;
+    const dx = player.x - monstroX;
+    const dy = player.y - monstroY;
+    const distancia = Math.sqrt(dx * dx + dy * dy);
+
+    if (distancia < 60 && podeReceberDano) {
+        podeReceberDano = false;
+
+        if (coracoes > 0) {
+            coracoes--;
+            atualizarVida();
+        }
+
+        if (playerElement) {
+            playerElement.classList.add("dano");
+        }
+
+        tocarSomDano();
+
+        let vermelho = true;
+        const intervalo = setInterval(function() {
+            vermelho = !vermelho;
+            if (playerElement) {
+                playerElement.classList.toggle("dano", vermelho);
+            }
+        }, 300);
+
+        setTimeout(function() {
+            clearInterval(intervalo);
+            if (playerElement) {
+                playerElement.classList.remove("dano");
+            }
+            podeReceberDano = true;
+        }, 600);
+    }
+}
+
+// O cronômetro continua contando durante as telas PHP de quiz/evolução.
 const tempo = document.getElementById("tempo");
 
 if (tempo) {
@@ -292,16 +665,62 @@ if (tempo) {
     atualizarTempo();
 }
 
+// Os formulários de início/menu redefinem somente o estado de uma nova partida.
+document.querySelectorAll("form").forEach(function(form) {
+    const acao = form.querySelector('input[name="acao"]');
 
-// ========================================
-// PONTE COM O GAMEPLAY DA PESSOA 1
-// O PHP controla o quiz e a evolução.
-// ========================================
+    if (!acao) {
+        return;
+    }
 
+    form.addEventListener("submit", function() {
+        if (acao.value === "jogar") {
+            sessionStorage.removeItem("pokemonSurvivorsPosicao");
+            sessionStorage.setItem("pokemonSurvivorsVidas", "5");
+            sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
+        }
+
+        if (acao.value === "menu") {
+            sessionStorage.removeItem("pokemonSurvivorsPosicao");
+            sessionStorage.removeItem("pokemonSurvivorsVidas");
+            sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
+        }
+    });
+});
+
+if (telaAtual === "menu") {
+    sessionStorage.removeItem("pokemonSurvivorsPosicao");
+    sessionStorage.removeItem("pokemonSurvivorsVidas");
+    sessionStorage.removeItem("pokemonSurvivorsIntroVisto");
+}
+
+if (gameplayAtivo) {
+    atualizarVida();
+    iniciarPlayer();
+    iniciarIntro();
+
+    function gameLoop() {
+        moverPlayer();
+        atualizarPlayer();
+        atualizarCamera();
+
+        sessionStorage.setItem(
+            "pokemonSurvivorsPosicao",
+            JSON.stringify({ x: player.x, y: player.y })
+        );
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    setInterval(spawnMonster, 3000);
+    gameLoop();
+}
+
+// Mantém a integração com qualquer sistema futuro que aumente player.nivel.
 let ultimoNivel = Number(document.body.dataset.nivel || 1);
 
 setInterval(function() {
-    if (typeof player === "undefined") {
+    if (!gameplayAtivo) {
         return;
     }
 
