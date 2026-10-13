@@ -1,16 +1,19 @@
 // ========================================
 // MÚSICA DA PARTIDA
+// O objeto de áudio pertence à página principal (index.php),
+// então continua tocando enquanto o iframe troca as telas PHP.
 // ========================================
 
 const nomeMusica =
     "Pokemon FireRed_LeafGreen Music- Wild Pokemon Battle [fbHBSDQ_UZ0].mp3";
 
-const musicaJogo = new Audio(
-    "assets/" + encodeURIComponent(nomeMusica)
-);
-
-const CHAVE_POSICAO_MUSICA = "pokemonSurvivorsPosicaoMusica";
-const CHAVE_MUSICA_ATIVA = "pokemonSurvivorsMusica";
+const musicaJogo = (
+    window.parent &&
+    window.parent !== window &&
+    window.parent.pokemonSurvivorsMusic
+)
+    ? window.parent.pokemonSurvivorsMusic
+    : new Audio("assets/" + encodeURIComponent(nomeMusica));
 
 const volumeSalvo = Number(localStorage.getItem("pokemonSurvivorsVolume"));
 const volumeInicial = Number.isFinite(volumeSalvo)
@@ -21,155 +24,45 @@ musicaJogo.loop = true;
 musicaJogo.volume = volumeInicial;
 musicaJogo.preload = "auto";
 
-// O browser recria o Audio em cada navegação PHP. Antes de tocar,
-// espera os metadados e busca o ponto salvo, para não tocar desde 0.
-let preparacaoMusica = null;
-
-function salvarPosicaoMusica() {
-    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
-        return;
-    }
-
-    const tempoAtual = musicaJogo.currentTime;
-
-    if (Number.isFinite(tempoAtual) && tempoAtual > 0) {
-        sessionStorage.setItem(CHAVE_POSICAO_MUSICA, String(tempoAtual));
-    }
-}
-
-musicaJogo.addEventListener("timeupdate", salvarPosicaoMusica);
-window.addEventListener("pagehide", salvarPosicaoMusica);
-window.addEventListener("beforeunload", salvarPosicaoMusica);
-document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === "hidden") {
-        salvarPosicaoMusica();
-    }
-});
-
-function prepararMusica() {
-    if (preparacaoMusica) {
-        return preparacaoMusica;
-    }
-
-    preparacaoMusica = new Promise(function(resolve) {
-        let finalizado = false;
-        let timeoutMetadados;
-        let timeoutBusca;
-
-        function concluir() {
-            if (finalizado) {
-                return;
-            }
-
-            finalizado = true;
-            clearTimeout(timeoutMetadados);
-            clearTimeout(timeoutBusca);
-            musicaJogo.removeEventListener("loadedmetadata", restaurarPosicao);
-            musicaJogo.removeEventListener("seeked", concluir);
-            musicaJogo.removeEventListener("error", concluir);
-            resolve();
-        }
-
-        function restaurarPosicao() {
-            if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
-                concluir();
-                return;
-            }
-
-            const tempoSalvo = Number(
-                sessionStorage.getItem(CHAVE_POSICAO_MUSICA) || 0
-            );
-            const duracao = musicaJogo.duration;
-
-            if (
-                !Number.isFinite(tempoSalvo) ||
-                tempoSalvo <= 0 ||
-                !Number.isFinite(duracao) ||
-                duracao <= 0
-            ) {
-                concluir();
-                return;
-            }
-
-            const destino = tempoSalvo % duracao;
-
-            if (Math.abs(musicaJogo.currentTime - destino) < 0.5) {
-                concluir();
-                return;
-            }
-
-            musicaJogo.addEventListener("seeked", concluir, { once: true });
-            timeoutBusca = setTimeout(concluir, 1800);
-
-            try {
-                musicaJogo.currentTime = destino;
-            } catch (erro) {
-                concluir();
-            }
-        }
-
-        if (musicaJogo.readyState >= 1) {
-            restaurarPosicao();
-        } else {
-            musicaJogo.addEventListener("loadedmetadata", restaurarPosicao, {
-                once: true
-            });
-            musicaJogo.addEventListener("error", concluir, { once: true });
-            timeoutMetadados = setTimeout(concluir, 6000);
-            musicaJogo.load();
-        }
-    });
-
-    return preparacaoMusica;
-}
-
 const telaAtual = document.body.dataset.tela;
+const musicaAtiva = sessionStorage.getItem("pokemonSurvivorsMusica") === "on";
 const telasComMusica = new Set(["jogo", "quiz", "evolucao", "falha_evolucao"]);
 
 function iniciarMusica() {
+    // A música já é a mesma instância entre as telas; não reinicia se toca.
     if (!musicaJogo.paused) {
         return;
     }
 
-    prepararMusica().then(function() {
-        if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) !== "on") {
-            return;
-        }
-
-        musicaJogo.play().catch(function() {
-            // O navegador pode bloquear a reprodução automática.
-        });
+    musicaJogo.play().catch(function() {
+        // O navegador pode bloquear a reprodução automática.
     });
 }
 
 function pararMusica() {
     musicaJogo.pause();
     musicaJogo.currentTime = 0;
-    sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
+    sessionStorage.removeItem("pokemonSurvivorsPosicaoMusica");
 }
 
-// Ao entrar no jogo, espera restaurar o ponto salvo antes de começar a tocar.
-if (
-    telasComMusica.has(telaAtual) &&
-    sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on"
-) {
+// No jogo, quiz e evoluções, apenas garante que a música esteja tocando.
+if (telasComMusica.has(telaAtual) && musicaAtiva) {
     iniciarMusica();
 }
 
-// Se o navegador bloquear o autoplay, o primeiro clique ou tecla tenta de novo.
 document.addEventListener("pointerdown", function() {
-    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on") {
+    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
         iniciarMusica();
     }
 });
 
 document.addEventListener("keydown", function() {
-    if (sessionStorage.getItem(CHAVE_MUSICA_ATIVA) === "on") {
+    if (sessionStorage.getItem("pokemonSurvivorsMusica") === "on") {
         iniciarMusica();
     }
 });
 
-// Apertar JOGAR inicia uma nova faixa; os outros formulários guardam o ponto atual.
+// Inicia do zero somente ao clicar em JOGAR; outras telas preservam o áudio.
 document.querySelectorAll("form").forEach(function(form) {
     const acao = form.querySelector('input[name="acao"]');
 
@@ -178,33 +71,29 @@ document.querySelectorAll("form").forEach(function(form) {
     }
 
     form.addEventListener("submit", function() {
-        salvarPosicaoMusica();
-
         if (acao.value === "jogar") {
-            sessionStorage.setItem(CHAVE_MUSICA_ATIVA, "on");
-            sessionStorage.removeItem(CHAVE_POSICAO_MUSICA);
+            sessionStorage.setItem("pokemonSurvivorsMusica", "on");
             musicaJogo.currentTime = 0;
             sessionStorage.setItem("pokemonSurvivorsInicio", String(Date.now()));
             iniciarMusica();
         }
 
         if (acao.value === "menu") {
-            sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
+            sessionStorage.removeItem("pokemonSurvivorsMusica");
             sessionStorage.removeItem("pokemonSurvivorsInicio");
             pararMusica();
         }
     });
 });
 
-// O menu e o Game Over encerram a música completamente.
 if (telaAtual === "menu") {
-    sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
     sessionStorage.removeItem("pokemonSurvivorsInicio");
     pararMusica();
 }
 
 if (telaAtual === "gameover") {
-    sessionStorage.removeItem(CHAVE_MUSICA_ATIVA);
+    sessionStorage.removeItem("pokemonSurvivorsMusica");
     pararMusica();
 }
 
