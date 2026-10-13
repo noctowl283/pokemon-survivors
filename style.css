@@ -1460,17 +1460,16 @@ body {
     pointer-events: none;
 }
 
-/* Cada evolução ganha uma área maior para o sprite. */
+/* Tamanhos e posições dos sprites durante a partida. */
 #player.charmander-jogo {
     width: 78px !important;
     height: 78px !important;
-    translate: 0 14px;
 }
 
 #player.charmeleon-jogo {
     width: 108px !important;
     height: 108px !important;
-    translate: 0 8px;
+    translate: 0 18px;
 }
 
 #player.charizard-jogo {
@@ -1482,33 +1481,25 @@ body {
 #player.megacharizard-jogo {
     width: 180px !important;
     height: 180px !important;
-    translate: 0 30px;
+    translate: 0 34px;
 }
 
-/* Mantém a sombra na altura do chão enquanto o desenho desce. */
-#player.charmeleon-jogo::after,
-#player.charizard-jogo::after,
-#player.megacharizard-jogo::after {
-    translate: 0 -8px;
-}
-
+/* As sombras ficam no chão mesmo com o desenho deslocado. */
 #player.charmeleon-jogo::after {
     width: 50px;
+    translate: 0 -18px;
 }
 
 #player.charizard-jogo::after {
     width: 53px;
     height: 12px;
-}
-
-#player.charmander-jogo::after {
-    translate: 0 -14px;
+    translate: 0 -8px;
 }
 
 #player.megacharizard-jogo::after {
     width: 82px;
     height: 17px;
-    translate: 0 -30px;
+    translate: 0 -34px;
 }
 
 /* Tela única usada quando acabar o tempo ou todas as vidas. */
