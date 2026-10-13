@@ -301,7 +301,7 @@ const tamanhosPokemon = {
     charmander: { largura: 78, altura: 78 },
     charmeleon: { largura: 108, altura: 108 },
     charizard: { largura: 112, altura: 112 },
-    megacharizard: { largura: 150, altura: 150 }
+    megacharizard: { largura: 180, altura: 180 }
 };
 const tamanhoPokemonAtual = tamanhosPokemon[pokemonDoServidor] || tamanhosPokemon.charmander;
 
