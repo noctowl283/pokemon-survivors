@@ -1467,22 +1467,32 @@ body {
 }
 
 #player.charmeleon-jogo {
-    width: 92px !important;
-    height: 92px !important;
+    width: 108px !important;
+    height: 108px !important;
+    translate: 0 8px;
 }
 
 #player.charizard-jogo {
     width: 112px !important;
     height: 112px !important;
+    translate: 0 8px;
 }
 
 #player.megacharizard-jogo {
-    width: 132px !important;
-    height: 132px !important;
+    width: 150px !important;
+    height: 150px !important;
+    translate: 0 8px;
+}
+
+/* Mantém a sombra na altura do chão enquanto o desenho desce. */
+#player.charmeleon-jogo::after,
+#player.charizard-jogo::after,
+#player.megacharizard-jogo::after {
+    translate: 0 -8px;
 }
 
 #player.charmeleon-jogo::after {
-    width: 44px;
+    width: 50px;
 }
 
 #player.charizard-jogo::after {
@@ -1491,8 +1501,8 @@ body {
 }
 
 #player.megacharizard-jogo::after {
-    width: 62px;
-    height: 14px;
+    width: 70px;
+    height: 15px;
 }
 
 /* Tela única usada quando acabar o tempo ou todas as vidas. */
