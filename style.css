@@ -1270,3 +1270,33 @@ body {
     display: none;
 }
 
+
+
+/* ========================================
+   SPRITES INDIVIDUAIS DO PERSONAGEM JOGÁVEL
+   O frame é trocado pelo JavaScript; cada PNG
+   já contém apenas um desenho, sem sprite sheet.
+======================================== */
+
+#player.charmander-jogo,
+#player.charmeleon-jogo,
+#player.charizard-jogo,
+#player.megacharizard-jogo {
+    width: 70px;
+    height: 70px;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+    animation: none !important;
+    image-rendering: pixelated;
+}
+
+#player.direcao-left {
+    transform: scaleX(-1) !important;
+}
+
+#player.direcao-right,
+#player.direcao-up,
+#player.direcao-down {
+    transform: none !important;
+}
