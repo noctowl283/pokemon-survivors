@@ -394,7 +394,15 @@ $evolucaoPara = $pokemons[$evolucaoParaId];
 
 // O PHP gera e guarda o mapa uma vez por partida para que o cenário
 // continue igual quando o jogador abre o quiz e volta ao jogo.
-if ($tela === "jogo" && !isset($_SESSION["objetos_mapa"])) {
+if (
+    $tela === "jogo"
+    && (
+        !isset($_SESSION["objetos_mapa"])
+        || empty($_SESSION["objetos_mapa"])
+        || !isset($_SESSION["objetos_mapa"][0]["sprite"])
+        || !isset($_SESSION["objetos_mapa"][0]["largura_visual"])
+    )
+) {
     $_SESSION["objetos_mapa"] = gerarObjetosMapa();
 }
 $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
