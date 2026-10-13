@@ -154,9 +154,10 @@ if (!isset($_SESSION["pokemon"])) {
 function gerarObjetosMapa(): array
 {
     $objetos = [];
+    $arvores = ["arvore1.png", "arvore2.png", "arvore3.png", "arvore4.png", "arvore5.png"];
     $configuracoes = [
-        ["tipo" => "tree", "quantidade" => 70, "largura" => 50, "altura" => 55, "deslocamento_x" => 15, "deslocamento_y" => 20, "largura_colisao" => 50, "altura_colisao" => 55],
-        ["tipo" => "rock", "quantidade" => 90, "largura" => 35, "altura" => 35, "deslocamento_x" => 8, "deslocamento_y" => 8, "largura_colisao" => 35, "altura_colisao" => 35]
+        ["tipo" => "tree", "quantidade" => 70, "largura_visual" => 90, "altura_visual" => 96, "deslocamento_x" => 25, "deslocamento_y" => 60, "largura_colisao" => 40, "altura_colisao" => 30],
+        ["tipo" => "rock", "quantidade" => 90, "largura_visual" => 46, "altura_visual" => 41, "deslocamento_x" => 6, "deslocamento_y" => 8, "largura_colisao" => 34, "altura_colisao" => 29]
     ];
 
     foreach ($configuracoes as $configuracao) {
@@ -168,13 +169,12 @@ function gerarObjetosMapa(): array
             $tentativas++;
             $x = random_int(200, 9800);
             $y = random_int(200, 9800);
-            $largura = $configuracao["largura"];
-            $altura = $configuracao["altura"];
+            $largura = $configuracao["largura_visual"];
+            $altura = $configuracao["altura_visual"];
 
-            // Mantém a área inicial do jogador sem árvores ou pedras.
             if (
-                $x < 5200 && $x + $largura > 4800
-                && $y < 5200 && $y + $altura > 4800
+                $x < 5300 && $x + $largura > 4700
+                && $y < 5300 && $y + $altura > 4700
             ) {
                 continue;
             }
@@ -184,8 +184,7 @@ function gerarObjetosMapa(): array
             $sobreposto = false;
 
             foreach ($objetos as $existente) {
-                $margem = 40;
-
+                $margem = 32;
                 if (
                     $colisaoX < $existente["colisao_x"] + $existente["largura_colisao"] + $margem
                     && $colisaoX + $configuracao["largura_colisao"] + $margem > $existente["colisao_x"]
@@ -201,10 +200,17 @@ function gerarObjetosMapa(): array
                 continue;
             }
 
+            $sprite = $configuracao["tipo"] === "tree"
+                ? $arvores[random_int(0, count($arvores) - 1)]
+                : "pedra.png";
+
             $objetos[] = [
                 "tipo" => $configuracao["tipo"],
+                "sprite" => $sprite,
                 "x" => $x,
                 "y" => $y,
+                "largura_visual" => $configuracao["largura_visual"],
+                "altura_visual" => $configuracao["altura_visual"],
                 "colisao_x" => $colisaoX,
                 "colisao_y" => $colisaoY,
                 "largura_colisao" => $configuracao["largura_colisao"],
@@ -213,7 +219,6 @@ function gerarObjetosMapa(): array
             $criados++;
         }
     }
-
     return $objetos;
 }
 
@@ -247,13 +252,14 @@ function resetarPartida(): void
     unset($_SESSION["pergunta_falha"], $_SESSION["resposta_correta_falha"]);
     $_SESSION["evolucao_de"] = "charmander";
     $_SESSION["evolucao_para"] = "charmeleon";
-    unset($_SESSION["objetos_mapa"]);
+    unset($_SESSION["objetos_mapa"], $_SESSION["inicio_partida"], $_SESSION["motivo_gameover"]);
 }
 
 function iniciarPartida(): void
 {
     resetarPartida();
     $_SESSION["tela"] = "jogo";
+    $_SESSION["inicio_partida"] = time();
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "GET"
@@ -276,6 +282,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $acao = $_GET["acao"];
 }
 
+// O limite de cinco minutos também é validado no servidor.
+$telaServidor = $_SESSION["tela"] ?? "menu";
+if (
+    isset($_SESSION["inicio_partida"])
+    && !in_array($telaServidor, ["menu", "gameover"], true)
+    && !in_array($acao, ["jogar", "menu", "gameover"], true)
+    && time() - (int) $_SESSION["inicio_partida"] >= 300
+) {
+    $_SESSION["tela"] = "gameover";
+    $_SESSION["motivo_gameover"] = "tempo";
+    $_SESSION["mensagem"] = "";
+    redirecionar();
+}
+
 if ($acao !== "") {
 
     switch ($acao) {
@@ -294,6 +314,13 @@ if ($acao !== "") {
         case "menu":
             // Voltar ao menu encerra a partida e apaga todo o progresso.
             resetarPartida();
+            redirecionar();
+
+        case "gameover":
+            $_SESSION["tela"] = "gameover";
+            $motivoGameover = $_GET["motivo"] ?? $_POST["motivo"] ?? "vida";
+            $_SESSION["motivo_gameover"] = $motivoGameover === "tempo" ? "tempo" : "vida";
+            $_SESSION["mensagem"] = "";
             redirecionar();
 
         case "quiz":
@@ -496,7 +523,7 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
             <div class="exp-hud" aria-label="Barra de experiência">
                 <div class="exp-legenda">
                     <span>🔵 EXP</span>
-                    <span><strong id="exp-valor">0</strong>/100</span>
+                    <span><strong id="exp-valor">0</strong>/<strong id="exp-total"><?= 100 + max(0, ((int) $_SESSION["nivel"]) - 1) * 50 ?></strong></span>
                 </div>
                 <div class="exp-trilho">
                     <div id="exp-preenchimento" class="exp-preenchimento"></div>
@@ -561,7 +588,15 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                             data-altura="<?= (int) $objeto["altura_colisao"] ?>"
                             style="left: <?= (int) $objeto["x"] ?>px; top: <?= (int) $objeto["y"] ?>px;"
                             aria-hidden="true"
-                        ><?= $objeto["tipo"] === "tree" ? "🌲" : "🪨" ?></div>
+                        >
+                            <img
+                                class="cenario-sprite"
+                                src="assets/arvores-pedras/<?= htmlspecialchars($objeto["sprite"], ENT_QUOTES, "UTF-8") ?>"
+                                alt=""
+                                width="<?= (int) $objeto["largura_visual"] ?>"
+                                height="<?= (int) $objeto["altura_visual"] ?>"
+                            >
+                        </div>
                     <?php endforeach; ?>
                 </div>
 
@@ -630,6 +665,26 @@ $objetosMapa = $_SESSION["objetos_mapa"] ?? [];
                     <?php endforeach; ?>
                 </form>
             <?php endif; ?>
+        </div>
+    </main>
+
+<?php elseif ($tela === "gameover"): ?>
+
+    <main class="tela-gameover">
+        <div class="gameover-caixa">
+            <h1>GAME OVER</h1>
+            <?php if (($_SESSION["motivo_gameover"] ?? "vida") === "tempo"): ?>
+                <h2>⏱ O tempo acabou!</h2>
+                <p>Você sobreviveu por 5 minutos. A partida terminou.</p>
+            <?php else: ?>
+                <h2>❤️ Suas vidas acabaram!</h2>
+                <p>Os Pokémon inimigos venceram desta vez. Tente sobreviver por mais tempo.</p>
+            <?php endif; ?>
+            <p class="gameover-nivel">Nível alcançado: <?= (int) $_SESSION["nivel"] ?></p>
+            <form method="post">
+                <input type="hidden" name="acao" value="menu">
+                <button class="botao" type="submit">VOLTAR AO MENU</button>
+            </form>
         </div>
     </main>
 
